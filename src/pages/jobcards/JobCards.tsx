@@ -1,0 +1,191 @@
+import React, { useState } from 'react';
+import { Plus, Search, Filter, MoreVertical, Clock, DollarSign } from 'lucide-react';
+import { DataTable } from '@/components/DataTable';
+import { StatusBadge, StatusType } from '@/components/StatusBadge';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+
+interface JobCard {
+  id: string;
+  jobNumber: string;
+  customer: string;
+  vehicle: string;
+  services: string[];
+  status: StatusType;
+  estimatedCost: number;
+  assignedTo: string;
+  createdAt: string;
+  dueDate: string;
+}
+
+const mockJobCards: JobCard[] = [
+  { id: '1', jobNumber: 'JC-2024-001', customer: 'John Smith', vehicle: 'Toyota Camry 2022', services: ['Oil Change', 'Filter Replacement'], status: 'in-progress', estimatedCost: 150, assignedTo: 'Mike Tech', createdAt: '2024-03-18', dueDate: '2024-03-19' },
+  { id: '2', jobNumber: 'JC-2024-002', customer: 'Sarah Wilson', vehicle: 'Honda Civic 2021', services: ['Brake Repair', 'Pad Replacement'], status: 'pending', estimatedCost: 450, assignedTo: 'John Tech', createdAt: '2024-03-18', dueDate: '2024-03-20' },
+  { id: '3', jobNumber: 'JC-2024-003', customer: 'Mike Johnson', vehicle: 'Ford F-150 2020', services: ['Engine Tune-up'], status: 'completed', estimatedCost: 280, assignedTo: 'Mike Tech', createdAt: '2024-03-17', dueDate: '2024-03-18' },
+  { id: '4', jobNumber: 'JC-2024-004', customer: 'Emily Davis', vehicle: 'BMW X5 2023', services: ['AC Repair', 'Gas Refill'], status: 'in-progress', estimatedCost: 350, assignedTo: 'Sarah Tech', createdAt: '2024-03-18', dueDate: '2024-03-19' },
+  { id: '5', jobNumber: 'JC-2024-005', customer: 'Robert Brown', vehicle: 'Audi A4 2021', services: ['Tire Rotation', 'Wheel Alignment'], status: 'completed', estimatedCost: 120, assignedTo: 'John Tech', createdAt: '2024-03-16', dueDate: '2024-03-17' },
+  { id: '6', jobNumber: 'JC-2024-006', customer: 'Lisa Anderson', vehicle: 'Mercedes C-Class 2022', services: ['Full Service'], status: 'pending', estimatedCost: 550, assignedTo: 'Mike Tech', createdAt: '2024-03-18', dueDate: '2024-03-21' },
+  { id: '7', jobNumber: 'JC-2024-007', customer: 'David Martinez', vehicle: 'Chevrolet Silverado 2020', services: ['Transmission Check'], status: 'cancelled', estimatedCost: 200, assignedTo: 'Sarah Tech', createdAt: '2024-03-15', dueDate: '2024-03-16' },
+  { id: '8', jobNumber: 'JC-2024-008', customer: 'Jennifer Taylor', vehicle: 'Tesla Model 3 2023', services: ['Battery Check', 'Software Update'], status: 'completed', estimatedCost: 100, assignedTo: 'John Tech', createdAt: '2024-03-17', dueDate: '2024-03-18' },
+];
+
+export const JobCards: React.FC = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<StatusType | 'all'>('all');
+
+  const filteredJobCards = mockJobCards.filter((job) => {
+    const matchesSearch =
+      job.jobNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      job.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      job.vehicle.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === 'all' || job.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
+  const statusCounts = {
+    all: mockJobCards.length,
+    pending: mockJobCards.filter((j) => j.status === 'pending').length,
+    'in-progress': mockJobCards.filter((j) => j.status === 'in-progress').length,
+    completed: mockJobCards.filter((j) => j.status === 'completed').length,
+    cancelled: mockJobCards.filter((j) => j.status === 'cancelled').length,
+  };
+
+  const columns = [
+    {
+      key: 'jobNumber',
+      header: 'Job #',
+      render: (job: JobCard) => (
+        <span className="font-mono font-medium text-accent">{job.jobNumber}</span>
+      ),
+    },
+    {
+      key: 'customer',
+      header: 'Customer & Vehicle',
+      render: (job: JobCard) => (
+        <div>
+          <p className="font-medium text-foreground">{job.customer}</p>
+          <p className="text-sm text-muted-foreground">{job.vehicle}</p>
+        </div>
+      ),
+    },
+    {
+      key: 'services',
+      header: 'Services',
+      render: (job: JobCard) => (
+        <div className="flex flex-wrap gap-1">
+          {job.services.map((service, index) => (
+            <span key={index} className="inline-flex items-center px-2 py-0.5 rounded-md bg-muted text-xs">
+              {service}
+            </span>
+          ))}
+        </div>
+      ),
+    },
+    {
+      key: 'status',
+      header: 'Status',
+      render: (job: JobCard) => <StatusBadge status={job.status} />,
+    },
+    {
+      key: 'estimatedCost',
+      header: 'Est. Cost',
+      render: (job: JobCard) => (
+        <div className="flex items-center gap-1">
+          <DollarSign className="h-4 w-4 text-muted-foreground" />
+          <span className="font-medium">{job.estimatedCost}</span>
+        </div>
+      ),
+    },
+    {
+      key: 'dueDate',
+      header: 'Due Date',
+      render: (job: JobCard) => (
+        <div className="flex items-center gap-2 text-sm">
+          <Clock className="h-4 w-4 text-muted-foreground" />
+          {new Date(job.dueDate).toLocaleDateString()}
+        </div>
+      ),
+    },
+    {
+      key: 'actions',
+      header: '',
+      render: () => (
+        <DropdownMenu>
+          <DropdownMenuTrigger className="p-2 hover:bg-muted rounded-lg transition-colors">
+            <MoreVertical className="h-4 w-4 text-muted-foreground" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem>View Details</DropdownMenuItem>
+            <DropdownMenuItem>Edit Job Card</DropdownMenuItem>
+            <DropdownMenuItem>Update Status</DropdownMenuItem>
+            <DropdownMenuItem>Generate Invoice</DropdownMenuItem>
+            <DropdownMenuItem className="text-destructive">Cancel Job</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ),
+    },
+  ];
+
+  return (
+    <div className="space-y-6">
+      {/* Page Header */}
+      <div className="page-header">
+        <div>
+          <h1 className="page-title">Job Cards</h1>
+          <p className="text-muted-foreground mt-1">Manage service job cards and work orders</p>
+        </div>
+        <button className="btn-primary">
+          <Plus className="h-4 w-4" />
+          New Job Card
+        </button>
+      </div>
+
+      {/* Status Tabs */}
+      <div className="flex flex-wrap gap-2">
+        {(['all', 'pending', 'in-progress', 'completed', 'cancelled'] as const).map((status) => (
+          <button
+            key={status}
+            onClick={() => setStatusFilter(status)}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              statusFilter === status
+                ? 'bg-accent text-accent-foreground'
+                : 'bg-muted text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            {status === 'all' ? 'All' : status.charAt(0).toUpperCase() + status.slice(1).replace('-', ' ')}
+            <span className="ml-2 text-xs opacity-70">({statusCounts[status]})</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Search */}
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <input
+            type="text"
+            placeholder="Search job cards..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="input-field pl-10"
+          />
+        </div>
+        <button className="btn-secondary">
+          <Filter className="h-4 w-4" />
+          More Filters
+        </button>
+      </div>
+
+      {/* Data Table */}
+      <DataTable
+        columns={columns}
+        data={filteredJobCards}
+        emptyMessage="No job cards found"
+      />
+    </div>
+  );
+};
