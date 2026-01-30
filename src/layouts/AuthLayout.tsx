@@ -2,24 +2,20 @@ import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { Wrench } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-
 export const AuthLayout: React.FC = () => {
-  const { isAuthenticated, isLoading } = useAuth();
-
+  const {
+    isAuthenticated,
+    isLoading
+  } = useAuth();
   if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-background">
+    return <div className="flex h-screen items-center justify-center bg-background">
         <div className="h-10 w-10 animate-spin rounded-full border-4 border-accent border-t-transparent" />
-      </div>
-    );
+      </div>;
   }
-
   if (isAuthenticated) {
     return <Navigate to="/dashboard" replace />;
   }
-
-  return (
-    <div className="min-h-screen bg-primary flex">
+  return <div className="min-h-screen bg-primary flex">
       {/* Left Panel - Branding */}
       <div className="hidden lg:flex lg:w-1/2 flex-col justify-center items-center p-12">
         <div className="max-w-md text-center">
@@ -53,9 +49,8 @@ export const AuthLayout: React.FC = () => {
       </div>
 
       {/* Right Panel - Auth Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-background rounded-l-3xl">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-background rounded-l-3xl shadow-sm">
         <Outlet />
       </div>
-    </div>
-  );
+    </div>;
 };
