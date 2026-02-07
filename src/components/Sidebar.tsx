@@ -15,17 +15,22 @@ import {
 import { useAuth } from '@/context/AuthContext';
 import { cn } from '@/lib/utils';
 
-type UserRole = 'admin' | 'manager' | 'technician';
+type UserRole = 'admin' | 'user';
 
 const navigation: { name: string; href: string; icon: any; roles: UserRole[] }[] = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, roles: ['admin', 'manager', 'technician'] },
-  { name: 'Customers', href: '/customers', icon: Users, roles: ['admin', 'manager'] },
-  { name: 'Vehicles', href: '/vehicles', icon: Car, roles: ['admin', 'manager'] },
-  { name: 'Job Cards', href: '/job-cards', icon: ClipboardList, roles: ['admin', 'manager', 'technician'] },
-  { name: 'Inventory', href: '/inventory', icon: Package, roles: ['admin', 'manager', 'technician'] },
-  { name: 'Billing', href: '/billing', icon: Receipt, roles: ['admin', 'manager'] },
+  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, roles: ['admin'] },
+  { name: 'Customers', href: '/customers', icon: Users, roles: ['admin'] },
+  { name: 'Vehicles', href: '/vehicles', icon: Car, roles: ['admin'] },
+  { name: 'Job Cards', href: '/job-cards', icon: ClipboardList, roles: ['admin'] },
+  { name: 'Inventory', href: '/inventory', icon: Package, roles: ['admin'] },
+  { name: 'Billing', href: '/billing', icon: Receipt, roles: ['admin'] },
   { name: 'Reports', href: '/reports', icon: BarChart3, roles: ['admin'] },
   { name: 'Settings', href: '/settings', icon: Settings, roles: ['admin'] },
+  // User pages
+  { name: 'My Dashboard', href: '/my-dashboard', icon: LayoutDashboard, roles: ['user'] },
+  { name: 'Track Service', href: '/track-service', icon: ClipboardList, roles: ['user'] },
+  { name: 'My Vehicles', href: '/my-vehicles', icon: Car, roles: ['user'] },
+  { name: 'My Invoices', href: '/my-invoices', icon: Receipt, roles: ['user'] },
 ];
 
 export const Sidebar: React.FC = () => {

@@ -8,7 +8,7 @@ export const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<'admin' | 'manager' | 'technician'>('technician');
+  const [selectedRole, setSelectedRole] = useState<'admin' | 'user'>('user');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -27,7 +27,7 @@ export const Login: React.FC = () => {
 
     if (success) {
       toast.success('Welcome back!');
-      navigate('/dashboard');
+      navigate(selectedRole === 'admin' ? '/dashboard' : '/my-dashboard');
     } else {
       toast.error('Invalid credentials');
     }
@@ -88,7 +88,7 @@ export const Login: React.FC = () => {
             Login As
           </label>
           <div className="grid grid-cols-3 gap-2">
-            {(['admin', 'manager', 'technician'] as const).map((role) => (
+            {(['admin', 'user'] as const).map((role) => (
               <button
                 key={role}
                 type="button"
