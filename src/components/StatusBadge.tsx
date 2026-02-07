@@ -1,7 +1,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 
-export type StatusType = 'pending' | 'in-progress' | 'completed' | 'cancelled';
+export type StatusType = 'pending' | 'in-progress' | 'completed' | 'cancelled' | 'paid';
 
 interface StatusBadgeProps {
   status: StatusType;
@@ -24,6 +24,10 @@ const statusConfig: Record<StatusType, { label: string; className: string }> = {
   cancelled: {
     label: 'Cancelled',
     className: 'bg-status-cancelled text-status-cancelled-foreground',
+  },
+  paid: {
+    label: 'Paid',
+    className: 'bg-status-completed text-status-completed-foreground',
   },
 };
 
