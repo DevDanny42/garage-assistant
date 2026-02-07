@@ -12,7 +12,7 @@ interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
+  login: (email: string, password: string, role?: 'admin' | 'manager' | 'technician') => Promise<boolean>;
   logout: () => void;
 }
 
@@ -43,18 +43,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(false);
   }, []);
 
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (email: string, password: string, role: 'admin' | 'manager' | 'technician' = 'technician'): Promise<boolean> => {
     setIsLoading(true);
     try {
-      // Mock authentication - replace with actual API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       if (email && password) {
+        const roleNames = { admin: 'Admin User', manager: 'Manager User', technician: 'Technician' };
         const mockUser: User = {
           id: '1',
-          name: 'John Admin',
+          name: roleNames[role],
           email: email,
-          role: 'admin',
+          role: role,
         };
         setUser(mockUser);
         localStorage.setItem('garage_user', JSON.stringify(mockUser));

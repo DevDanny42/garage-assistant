@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/context/AuthContext";
 import { AdminLayout } from "@/layouts/AdminLayout";
 import { AuthLayout } from "@/layouts/AuthLayout";
+import { RoleGuard } from "@/components/RoleGuard";
 import { Login } from "@/pages/auth/Login";
 import { Dashboard } from "@/pages/dashboard/Dashboard";
 import { Customers } from "@/pages/customers/Customers";
@@ -35,13 +36,13 @@ const App = () => (
             {/* Admin Routes */}
             <Route element={<AdminLayout />}>
               <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/customers" element={<Customers />} />
-              <Route path="/vehicles" element={<Vehicles />} />
+              <Route path="/customers" element={<RoleGuard allowedRoles={['admin', 'manager']}><Customers /></RoleGuard>} />
+              <Route path="/vehicles" element={<RoleGuard allowedRoles={['admin', 'manager']}><Vehicles /></RoleGuard>} />
               <Route path="/job-cards" element={<JobCards />} />
               <Route path="/inventory" element={<Inventory />} />
-              <Route path="/billing" element={<Billing />} />
-              <Route path="/reports" element={<Reports />} />
-              <Route path="/settings" element={<Settings />} />
+              <Route path="/billing" element={<RoleGuard allowedRoles={['admin', 'manager']}><Billing /></RoleGuard>} />
+              <Route path="/reports" element={<RoleGuard allowedRoles={['admin']}><Reports /></RoleGuard>} />
+              <Route path="/settings" element={<RoleGuard allowedRoles={['admin']}><Settings /></RoleGuard>} />
             </Route>
 
             {/* Redirects */}

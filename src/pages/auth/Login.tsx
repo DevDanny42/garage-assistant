@@ -8,6 +8,7 @@ export const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<'admin' | 'manager' | 'technician'>('technician');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ export const Login: React.FC = () => {
     }
 
     setIsSubmitting(true);
-    const success = await login(email, password);
+    const success = await login(email, password, selectedRole);
     setIsSubmitting(false);
 
     if (success) {
@@ -81,6 +82,29 @@ export const Login: React.FC = () => {
           </div>
         </div>
 
+        {/* Role Selection */}
+        <div>
+          <label className="block text-sm font-medium text-foreground mb-2">
+            Login As
+          </label>
+          <div className="grid grid-cols-3 gap-2">
+            {(['admin', 'manager', 'technician'] as const).map((role) => (
+              <button
+                key={role}
+                type="button"
+                onClick={() => setSelectedRole(role)}
+                className={`py-2 px-3 rounded-lg text-sm font-medium border transition-colors capitalize ${
+                  selectedRole === role
+                    ? 'bg-accent text-accent-foreground border-accent'
+                    : 'bg-muted text-muted-foreground border-border hover:border-accent/50'
+                }`}
+              >
+                {role}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div className="flex items-center justify-between">
           <label className="flex items-center gap-2 cursor-pointer">
             <input
@@ -111,7 +135,7 @@ export const Login: React.FC = () => {
       </form>
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
-        Demo: Use any email and password to login
+        Demo: Use any email/password. Select a role to see different access levels.
       </p>
     </div>
   );

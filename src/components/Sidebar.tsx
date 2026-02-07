@@ -15,15 +15,17 @@ import {
 import { useAuth } from '@/context/AuthContext';
 import { cn } from '@/lib/utils';
 
-const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Customers', href: '/customers', icon: Users },
-  { name: 'Vehicles', href: '/vehicles', icon: Car },
-  { name: 'Job Cards', href: '/job-cards', icon: ClipboardList },
-  { name: 'Inventory', href: '/inventory', icon: Package },
-  { name: 'Billing', href: '/billing', icon: Receipt },
-  { name: 'Reports', href: '/reports', icon: BarChart3 },
-  { name: 'Settings', href: '/settings', icon: Settings },
+type UserRole = 'admin' | 'manager' | 'technician';
+
+const navigation: { name: string; href: string; icon: any; roles: UserRole[] }[] = [
+  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, roles: ['admin', 'manager', 'technician'] },
+  { name: 'Customers', href: '/customers', icon: Users, roles: ['admin', 'manager'] },
+  { name: 'Vehicles', href: '/vehicles', icon: Car, roles: ['admin', 'manager'] },
+  { name: 'Job Cards', href: '/job-cards', icon: ClipboardList, roles: ['admin', 'manager', 'technician'] },
+  { name: 'Inventory', href: '/inventory', icon: Package, roles: ['admin', 'manager', 'technician'] },
+  { name: 'Billing', href: '/billing', icon: Receipt, roles: ['admin', 'manager'] },
+  { name: 'Reports', href: '/reports', icon: BarChart3, roles: ['admin'] },
+  { name: 'Settings', href: '/settings', icon: Settings, roles: ['admin'] },
 ];
 
 export const Sidebar: React.FC = () => {
@@ -51,7 +53,9 @@ export const Sidebar: React.FC = () => {
 
         {/* Navigation */}
         <nav className="flex-1 space-y-1 px-3 py-4 overflow-y-auto">
-          {navigation.map((item) => (
+          {navigation
+            .filter((item) => user?.role && item.roles.includes(user.role))
+            .map((item) => (
             <NavLink
               key={item.name}
               to={item.href}
