@@ -10,6 +10,7 @@ import {
 import { Link } from 'react-router-dom';
 import { StatCard } from '@/components/StatCard';
 import { StatusBadge, StatusType } from '@/components/StatusBadge';
+import { useSettings } from '@/context/SettingsContext';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 
 const revenueData = [
@@ -47,6 +48,7 @@ const lowStockItems = [
 ];
 
 export const Dashboard: React.FC = () => {
+  const { formatCurrency, currencySymbol } = useSettings();
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -83,7 +85,7 @@ export const Dashboard: React.FC = () => {
         />
         <StatCard
           title="Revenue (MTD)"
-          value="$24,500"
+          value={formatCurrency(24500)}
           icon={DollarSign}
           trend={{ value: 18.7, isPositive: true }}
         />
@@ -110,14 +112,14 @@ export const Dashboard: React.FC = () => {
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
               <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" fontSize={12} />
-              <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickFormatter={(value) => `$${value / 1000}k`} />
+              <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickFormatter={(value) => `${currencySymbol}${value / 1000}k`} />
               <Tooltip 
                 contentStyle={{ 
                   backgroundColor: 'hsl(var(--card))', 
                   border: '1px solid hsl(var(--border))',
                   borderRadius: '8px'
                 }}
-                formatter={(value: number) => [`$${value.toLocaleString()}`, 'Revenue']}
+                formatter={(value: number) => [`${formatCurrency(value)}`, 'Revenue']}
               />
               <Area type="monotone" dataKey="revenue" stroke="hsl(var(--accent))" fillOpacity={1} fill="url(#colorRevenue)" strokeWidth={2} />
             </AreaChart>

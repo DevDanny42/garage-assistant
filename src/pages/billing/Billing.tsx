@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Plus, Search, Download, MoreVertical, Receipt, CheckCircle, Clock, XCircle } from 'lucide-react';
 import { DataTable } from '@/components/DataTable';
+import { useSettings } from '@/context/SettingsContext';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -43,6 +44,7 @@ const statusConfig: Record<PaymentStatus, { label: string; icon: React.ElementTy
 };
 
 export const Billing: React.FC = () => {
+  const { formatCurrency } = useSettings();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<PaymentStatus | 'all'>('all');
 
@@ -86,8 +88,8 @@ export const Billing: React.FC = () => {
       header: 'Amount',
       render: (invoice: Invoice) => (
         <div className="text-sm">
-          <p className="font-medium text-foreground">${invoice.total.toFixed(2)}</p>
-          <p className="text-muted-foreground">incl. ${invoice.tax} tax</p>
+          <p className="font-medium text-foreground">{formatCurrency(invoice.total)}</p>
+          <p className="text-muted-foreground">incl. {formatCurrency(invoice.tax)} tax</p>
         </div>
       ),
     },
@@ -158,15 +160,15 @@ export const Billing: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
         <div className="bg-card rounded-xl p-4 border border-border">
           <p className="text-sm text-muted-foreground">Total Revenue</p>
-          <p className="text-2xl font-bold text-status-completed mt-1">${totalRevenue.toFixed(2)}</p>
+          <p className="text-2xl font-bold text-status-completed mt-1">{formatCurrency(totalRevenue)}</p>
         </div>
         <div className="bg-card rounded-xl p-4 border border-border">
           <p className="text-sm text-muted-foreground">Pending</p>
-          <p className="text-2xl font-bold text-status-pending mt-1">${pendingAmount.toFixed(2)}</p>
+          <p className="text-2xl font-bold text-status-pending mt-1">{formatCurrency(pendingAmount)}</p>
         </div>
         <div className="bg-card rounded-xl p-4 border border-border">
           <p className="text-sm text-muted-foreground">Overdue</p>
-          <p className="text-2xl font-bold text-destructive mt-1">${overdueAmount.toFixed(2)}</p>
+          <p className="text-2xl font-bold text-destructive mt-1">{formatCurrency(overdueAmount)}</p>
         </div>
         <div className="bg-card rounded-xl p-4 border border-border">
           <p className="text-sm text-muted-foreground">Total Invoices</p>

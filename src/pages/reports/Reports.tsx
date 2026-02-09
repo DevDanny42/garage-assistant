@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Download, Calendar, TrendingUp, Users, DollarSign, Car } from 'lucide-react';
+import { useSettings } from '@/context/SettingsContext';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 
 const revenueData = [
@@ -26,15 +27,16 @@ const customerSegments = [
   { name: 'Premium', value: 25, color: 'hsl(var(--chart-3))' },
 ];
 
-const reportCards = [
-  { title: 'Total Revenue', value: '$107,500', change: '+18.5%', icon: DollarSign, positive: true },
-  { title: 'Total Jobs', value: '505', change: '+12.3%', icon: Car, positive: true },
-  { title: 'New Customers', value: '89', change: '+8.7%', icon: Users, positive: true },
-  { title: 'Avg Job Value', value: '$213', change: '+5.2%', icon: TrendingUp, positive: true },
-];
-
 export const Reports: React.FC = () => {
+  const { formatCurrency, currencySymbol } = useSettings();
   const [dateRange, setDateRange] = useState('6months');
+
+  const reportCards = [
+    { title: 'Total Revenue', value: formatCurrency(107500), change: '+18.5%', icon: DollarSign, positive: true },
+    { title: 'Total Jobs', value: '505', change: '+12.3%', icon: Car, positive: true },
+    { title: 'New Customers', value: '89', change: '+8.7%', icon: Users, positive: true },
+    { title: 'Avg Job Value', value: formatCurrency(213), change: '+5.2%', icon: TrendingUp, positive: true },
+  ];
 
   return (
     <div className="space-y-6">
@@ -117,14 +119,14 @@ export const Reports: React.FC = () => {
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
             <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" fontSize={12} />
-            <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickFormatter={(value) => `$${value / 1000}k`} />
+            <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickFormatter={(value) => `${currencySymbol}${value / 1000}k`} />
             <Tooltip 
               contentStyle={{ 
                 backgroundColor: 'hsl(var(--card))', 
                 border: '1px solid hsl(var(--border))',
                 borderRadius: '8px'
               }}
-              formatter={(value: number) => [`$${value.toLocaleString()}`, '']}
+              formatter={(value: number) => [`${formatCurrency(value)}`, '']}
             />
             <Area type="monotone" dataKey="revenue" stroke="hsl(var(--accent))" fillOpacity={1} fill="url(#colorRevenue)" strokeWidth={2} />
             <Area type="monotone" dataKey="expenses" stroke="hsl(var(--chart-2))" fillOpacity={1} fill="url(#colorExpenses)" strokeWidth={2} />
@@ -222,8 +224,8 @@ export const Reports: React.FC = () => {
                 <tr key={index}>
                   <td className="font-medium text-foreground">{service.name}</td>
                   <td>{service.count}</td>
-                  <td className="font-medium">${service.revenue.toLocaleString()}</td>
-                  <td>${(service.revenue / service.count).toFixed(2)}</td>
+                  <td className="font-medium">{formatCurrency(service.revenue)}</td>
+                  <td>{formatCurrency(Math.round(service.revenue / service.count))}</td>
                 </tr>
               ))}
             </tbody>
