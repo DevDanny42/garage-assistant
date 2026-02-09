@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Plus, Search, Package, AlertTriangle, MoreVertical } from 'lucide-react';
 import { DataTable } from '@/components/DataTable';
+import { AddInventoryDialog } from '@/components/AddInventoryDialog';
+import { toast } from '@/hooks/use-toast';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -35,10 +37,22 @@ const mockInventory: InventoryItem[] = [
 export const Inventory: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [inventory, setInventory] = useState(mockInventory);
 
-  const categories = ['all', ...new Set(mockInventory.map((item) => item.category))];
+  const handleAddItem = (item: Omit<InventoryItem, 'id' | 'lastUpdated'>) => {
+    const newItem: InventoryItem = {
+      ...item,
+      id: String(inventory.length + 1),
+      lastUpdated: new Date().toISOString().split('T')[0],
+    };
+    setInventory([newItem, ...inventory]);
+    toast({ title: 'Item added', description: `${item.name} has been added to inventory.` });
+  };
 
-  const filteredInventory = mockInventory.filter((item) => {
+  const categories = ['all', ...new Set(inventory.map((item) => item.category))];
+
+  const filteredInventory = inventory.filter((item) => {
     const matchesSearch =
       item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.sku.toLowerCase().includes(searchTerm.toLowerCase());
@@ -46,8 +60,8 @@ export const Inventory: React.FC = () => {
     return matchesSearch && matchesCategory;
   });
 
-  const lowStockCount = mockInventory.filter((item) => item.quantity <= item.minStock).length;
-  const totalValue = mockInventory.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
+  const lowStockCount = inventory.filter((item) => item.quantity <= item.minStock).length;
+  const totalValue = inventory.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
 
   const columns = [
     {
@@ -140,7 +154,7 @@ export const Inventory: React.FC = () => {
           <h1 className="page-title">Inventory</h1>
           <p className="text-muted-foreground mt-1">Manage spare parts and supplies</p>
         </div>
-        <button className="btn-primary">
+        <button className="btn-primary" onClick={() => setShowAddDialog(true)}>
           <Plus className="h-4 w-4" />
           Add Item
         </button>
@@ -150,7 +164,7 @@ export const Inventory: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
         <div className="bg-card rounded-xl p-4 border border-border">
           <p className="text-sm text-muted-foreground">Total Items</p>
-          <p className="text-2xl font-bold text-foreground mt-1">{mockInventory.length}</p>
+          <p className="text-2xl font-bold text-foreground mt-1">{inventory.length}</p>
         </div>
         <div className="bg-card rounded-xl p-4 border border-border">
           <p className="text-sm text-muted-foreground">Categories</p>
@@ -197,6 +211,8 @@ export const Inventory: React.FC = () => {
         data={filteredInventory}
         emptyMessage="No inventory items found"
       />
+
+      <AddInventoryDialog open={showAddDialog} onOpenChange={setShowAddDialog} onAdd={handleAddItem} />
     </div>
   );
 };

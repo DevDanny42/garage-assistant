@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Plus, Search, Filter, MoreVertical, Clock, DollarSign } from 'lucide-react';
 import { DataTable } from '@/components/DataTable';
 import { StatusBadge, StatusType } from '@/components/StatusBadge';
+import { AddJobCardDialog } from '@/components/AddJobCardDialog';
+import { toast } from '@/hooks/use-toast';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,8 +38,27 @@ const mockJobCards: JobCard[] = [
 export const JobCards: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusType | 'all'>('all');
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [jobCards, setJobCards] = useState(mockJobCards);
 
-  const filteredJobCards = mockJobCards.filter((job) => {
+  const handleAddJobCard = (jc: { customer: string; vehicle: string; services: string[]; status: string; estimatedCost: number; assignedTo: string; dueDate: string }) => {
+    const newJob: JobCard = {
+      id: String(jobCards.length + 1),
+      jobNumber: `JC-2024-${String(jobCards.length + 1).padStart(3, '0')}`,
+      customer: jc.customer,
+      vehicle: jc.vehicle,
+      services: jc.services,
+      status: jc.status as StatusType,
+      estimatedCost: jc.estimatedCost,
+      assignedTo: jc.assignedTo,
+      createdAt: new Date().toISOString().split('T')[0],
+      dueDate: jc.dueDate,
+    };
+    setJobCards([newJob, ...jobCards]);
+    toast({ title: 'Job Card created', description: `${newJob.jobNumber} has been created.` });
+  };
+
+  const filteredJobCards = jobCards.filter((job) => {
     const matchesSearch =
       job.jobNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
       job.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -47,11 +68,11 @@ export const JobCards: React.FC = () => {
   });
 
   const statusCounts = {
-    all: mockJobCards.length,
-    pending: mockJobCards.filter((j) => j.status === 'pending').length,
-    'in-progress': mockJobCards.filter((j) => j.status === 'in-progress').length,
-    completed: mockJobCards.filter((j) => j.status === 'completed').length,
-    cancelled: mockJobCards.filter((j) => j.status === 'cancelled').length,
+    all: jobCards.length,
+    pending: jobCards.filter((j) => j.status === 'pending').length,
+    'in-progress': jobCards.filter((j) => j.status === 'in-progress').length,
+    completed: jobCards.filter((j) => j.status === 'completed').length,
+    cancelled: jobCards.filter((j) => j.status === 'cancelled').length,
   };
 
   const columns = [
@@ -138,7 +159,7 @@ export const JobCards: React.FC = () => {
           <h1 className="page-title">Job Cards</h1>
           <p className="text-muted-foreground mt-1">Manage service job cards and work orders</p>
         </div>
-        <button className="btn-primary">
+        <button className="btn-primary" onClick={() => setShowAddDialog(true)}>
           <Plus className="h-4 w-4" />
           New Job Card
         </button>
@@ -186,6 +207,8 @@ export const JobCards: React.FC = () => {
         data={filteredJobCards}
         emptyMessage="No job cards found"
       />
+
+      <AddJobCardDialog open={showAddDialog} onOpenChange={setShowAddDialog} onAdd={handleAddJobCard} />
     </div>
   );
 };
