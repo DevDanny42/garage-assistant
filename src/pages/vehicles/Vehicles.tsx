@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Plus, Search, Car, Calendar, MoreVertical } from 'lucide-react';
 import { DataTable } from '@/components/DataTable';
+import { AddVehicleDialog } from '@/components/AddVehicleDialog';
+import { toast } from '@/hooks/use-toast';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -34,8 +36,21 @@ const mockVehicles: Vehicle[] = [
 
 export const Vehicles: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [vehicles, setVehicles] = useState(mockVehicles);
 
-  const filteredVehicles = mockVehicles.filter(
+  const handleAddVehicle = (vehicle: Omit<Vehicle, 'id' | 'lastService' | 'totalServices'>) => {
+    const newVehicle: Vehicle = {
+      ...vehicle,
+      id: String(vehicles.length + 1),
+      lastService: new Date().toISOString().split('T')[0],
+      totalServices: 0,
+    };
+    setVehicles([newVehicle, ...vehicles]);
+    toast({ title: 'Vehicle added', description: `${vehicle.year} ${vehicle.make} ${vehicle.model} has been added.` });
+  };
+
+  const filteredVehicles = vehicles.filter(
     (vehicle) =>
       vehicle.make.toLowerCase().includes(searchTerm.toLowerCase()) ||
       vehicle.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -122,7 +137,7 @@ export const Vehicles: React.FC = () => {
           <h1 className="page-title">Vehicles</h1>
           <p className="text-muted-foreground mt-1">Manage registered vehicles</p>
         </div>
-        <button className="btn-primary">
+        <button className="btn-primary" onClick={() => setShowAddDialog(true)}>
           <Plus className="h-4 w-4" />
           Add Vehicle
         </button>
@@ -146,12 +161,12 @@ export const Vehicles: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-card rounded-xl p-4 border border-border">
           <p className="text-sm text-muted-foreground">Total Vehicles</p>
-          <p className="text-2xl font-bold text-foreground mt-1">{mockVehicles.length}</p>
+          <p className="text-2xl font-bold text-foreground mt-1">{vehicles.length}</p>
         </div>
         <div className="bg-card rounded-xl p-4 border border-border">
           <p className="text-sm text-muted-foreground">Total Services</p>
           <p className="text-2xl font-bold text-foreground mt-1">
-            {mockVehicles.reduce((sum, v) => sum + v.totalServices, 0)}
+            {vehicles.reduce((sum, v) => sum + v.totalServices, 0)}
           </p>
         </div>
         <div className="bg-card rounded-xl p-4 border border-border">
@@ -166,6 +181,8 @@ export const Vehicles: React.FC = () => {
         data={filteredVehicles}
         emptyMessage="No vehicles found"
       />
+
+      <AddVehicleDialog open={showAddDialog} onOpenChange={setShowAddDialog} onAdd={handleAddVehicle} />
     </div>
   );
 };
