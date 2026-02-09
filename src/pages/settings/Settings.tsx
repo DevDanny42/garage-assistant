@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { Save, Building2, Bell, Shield, Palette, Users } from 'lucide-react';
+import { Save, Building2, Bell, Shield, Palette, Users, Sun, Moon } from 'lucide-react';
 import { toast } from 'sonner';
+import { useSettings } from '@/context/SettingsContext';
 
 export const Settings: React.FC = () => {
+  const { theme, setTheme, currency, setCurrency } = useSettings();
   const [activeTab, setActiveTab] = useState('general');
   const [formData, setFormData] = useState({
     garageName: 'AutoGarage Pro',
@@ -10,7 +12,6 @@ export const Settings: React.FC = () => {
     phone: '+1 234-567-8900',
     address: '123 Main Street, City, State 12345',
     taxRate: '12',
-    currency: 'USD',
     emailNotifications: true,
     smsNotifications: false,
     jobAlerts: true,
@@ -107,8 +108,8 @@ export const Settings: React.FC = () => {
                       Currency
                     </label>
                     <select
-                      value={formData.currency}
-                      onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
+                      value={currency}
+                      onChange={(e) => setCurrency(e.target.value as any)}
                       className="input-field"
                     >
                       <option value="USD">USD ($)</option>
@@ -263,7 +264,34 @@ export const Settings: React.FC = () => {
           {activeTab === 'appearance' && (
             <div className="space-y-6">
               <h3 className="text-lg font-semibold text-foreground mb-4">Appearance Settings</h3>
-              <p className="text-muted-foreground">Theme customization coming soon...</p>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
+                  <div>
+                    <p className="font-medium text-foreground">Theme</p>
+                    <p className="text-sm text-muted-foreground">Choose between light and dark mode</p>
+                  </div>
+                  <div className="flex items-center gap-2 bg-background rounded-lg p-1 border border-border">
+                    <button
+                      onClick={() => setTheme('light')}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                        theme === 'light' ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      <Sun className="h-4 w-4" />
+                      Light
+                    </button>
+                    <button
+                      onClick={() => setTheme('dark')}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                        theme === 'dark' ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      <Moon className="h-4 w-4" />
+                      Dark
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 

@@ -1,6 +1,7 @@
 import React from 'react';
-import { Bell, Search, Menu } from 'lucide-react';
+import { Bell, Search, Menu, Sun, Moon } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { useSettings } from '@/context/SettingsContext';
 
 interface NavbarProps {
   onMenuClick?: () => void;
@@ -9,6 +10,7 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ onMenuClick, title }) => {
   const { user } = useAuth();
+  const { theme, setTheme } = useSettings();
 
   return (
     <header className="sticky top-0 z-30 h-16 bg-card border-b border-border">
@@ -35,6 +37,19 @@ export const Navbar: React.FC<NavbarProps> = ({ onMenuClick, title }) => {
               className="bg-transparent border-none outline-none text-sm text-foreground placeholder:text-muted-foreground w-48"
             />
           </div>
+
+          {/* Theme Toggle */}
+          <button
+            onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+            className="p-2 hover:bg-muted rounded-lg transition-colors"
+            title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+          >
+            {theme === 'light' ? (
+              <Moon className="h-5 w-5 text-muted-foreground" />
+            ) : (
+              <Sun className="h-5 w-5 text-muted-foreground" />
+            )}
+          </button>
 
           {/* Notifications */}
           <button className="relative p-2 hover:bg-muted rounded-lg transition-colors">

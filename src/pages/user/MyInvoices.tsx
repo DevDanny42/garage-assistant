@@ -1,6 +1,7 @@
 import React from 'react';
 import { Download, Eye, Receipt } from 'lucide-react';
 import { StatusBadge, StatusType } from '@/components/StatusBadge';
+import { useSettings } from '@/context/SettingsContext';
 
 const invoices = [
   {
@@ -38,6 +39,7 @@ const invoices = [
 ];
 
 export const MyInvoices: React.FC = () => {
+  const { formatCurrency } = useSettings();
   return (
     <div className="space-y-6">
       <div className="page-header">
@@ -51,18 +53,18 @@ export const MyInvoices: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-card rounded-xl border border-border p-5">
           <p className="text-sm text-muted-foreground">Total Spent</p>
-          <p className="text-2xl font-bold text-foreground mt-1">₹{invoices.reduce((a, b) => a + b.amount, 0).toLocaleString()}</p>
+          <p className="text-2xl font-bold text-foreground mt-1">{formatCurrency(invoices.reduce((a, b) => a + b.amount, 0))}</p>
         </div>
         <div className="bg-card rounded-xl border border-border p-5">
           <p className="text-sm text-muted-foreground">Paid</p>
           <p className="text-2xl font-bold text-accent mt-1">
-            ₹{invoices.filter(i => i.status === 'paid').reduce((a, b) => a + b.amount, 0).toLocaleString()}
+            {formatCurrency(invoices.filter(i => i.status === 'paid').reduce((a, b) => a + b.amount, 0))}
           </p>
         </div>
         <div className="bg-card rounded-xl border border-border p-5">
           <p className="text-sm text-muted-foreground">Pending</p>
           <p className="text-2xl font-bold text-destructive mt-1">
-            ₹{invoices.filter(i => i.status === 'pending').reduce((a, b) => a + b.amount, 0).toLocaleString()}
+            {formatCurrency(invoices.filter(i => i.status === 'pending').reduce((a, b) => a + b.amount, 0))}
           </p>
         </div>
       </div>
@@ -94,7 +96,7 @@ export const MyInvoices: React.FC = () => {
                   <td className="p-4 text-sm text-muted-foreground">{inv.date}</td>
                   <td className="p-4 text-sm text-foreground">{inv.vehicle}</td>
                   <td className="p-4 text-sm text-foreground">{inv.service}</td>
-                  <td className="p-4 text-sm font-medium text-foreground">₹{inv.amount.toLocaleString()}</td>
+                  <td className="p-4 text-sm font-medium text-foreground">{formatCurrency(inv.amount)}</td>
                   <td className="p-4"><StatusBadge status={inv.status} /></td>
                   <td className="p-4">
                     <div className="flex items-center gap-2">
