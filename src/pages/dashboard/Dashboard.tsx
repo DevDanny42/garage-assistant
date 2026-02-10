@@ -188,14 +188,14 @@ export const Dashboard: React.FC = () => {
           </div>
           <div className="divide-y divide-border">
             {lowStockItems.map((item, index) => (
-              <div key={index} className="flex items-center justify-between p-4">
-                <div>
-                  <p className="font-medium text-foreground">{item.name}</p>
-                  <p className="text-sm text-destructive">
+              <div key={index} className="flex items-center justify-between p-3 sm:p-4 gap-3">
+                <div className="min-w-0">
+                  <p className="font-medium text-foreground text-sm sm:text-base truncate">{item.name}</p>
+                  <p className="text-xs sm:text-sm text-destructive">
                     Only {item.quantity} {item.unit} left
                   </p>
                 </div>
-                <button className="btn-secondary text-sm py-1.5 px-3">
+                <button className="btn-secondary text-xs sm:text-sm py-1.5 px-2 sm:px-3 shrink-0">
                   Reorder
                 </button>
               </div>
