@@ -26,7 +26,7 @@ export const AdminLayout: React.FC = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Sidebar */}
-      <Sidebar />
+      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
       {/* Mobile Overlay */}
       {isSidebarOpen && (
@@ -39,7 +39,7 @@ export const AdminLayout: React.FC = () => {
       {/* Main Content */}
       <div className="lg:pl-64">
         <Navbar onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)} />
-        <main className="p-6">
+        <main className="p-4 sm:p-6">
           <Outlet />
         </main>
       </div>
