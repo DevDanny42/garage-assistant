@@ -10,7 +10,8 @@ import {
   BarChart3, 
   Settings,
   LogOut,
-  Wrench
+  Wrench,
+  X
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { cn } from '@/lib/utils';
@@ -33,7 +34,12 @@ const navigation: { name: string; href: string; icon: any; roles: UserRole[] }[]
   { name: 'My Invoices', href: '/my-invoices', icon: Receipt, roles: ['user'] },
 ];
 
-export const Sidebar: React.FC = () => {
+interface SidebarProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -42,18 +48,35 @@ export const Sidebar: React.FC = () => {
     navigate('/login');
   };
 
+  const handleNavClick = () => {
+    onClose();
+  };
+
   return (
-    <aside className="fixed left-0 top-0 z-40 h-screen w-64 bg-sidebar">
+    <aside
+      className={cn(
+        'fixed left-0 top-0 z-40 h-screen w-64 bg-sidebar transition-transform duration-300 ease-in-out',
+        isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+      )}
+    >
       <div className="flex h-full flex-col">
         {/* Logo */}
-        <div className="flex h-16 items-center gap-3 px-6 border-b border-sidebar-border">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-sidebar-primary">
-            <Wrench className="h-5 w-5 text-sidebar-primary-foreground" />
+        <div className="flex h-16 items-center justify-between px-6 border-b border-sidebar-border">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-sidebar-primary">
+              <Wrench className="h-5 w-5 text-sidebar-primary-foreground" />
+            </div>
+            <div>
+              <h1 className="text-lg font-bold text-sidebar-foreground">AutoGarage</h1>
+              <p className="text-xs text-sidebar-muted">Management System</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-lg font-bold text-sidebar-foreground">AutoGarage</h1>
-            <p className="text-xs text-sidebar-muted">Management System</p>
-          </div>
+          <button
+            onClick={onClose}
+            className="lg:hidden p-1.5 hover:bg-sidebar-accent rounded-lg transition-colors"
+          >
+            <X className="h-5 w-5 text-sidebar-muted" />
+          </button>
         </div>
 
         {/* Navigation */}
@@ -64,6 +87,7 @@ export const Sidebar: React.FC = () => {
             <NavLink
               key={item.name}
               to={item.href}
+              onClick={handleNavClick}
               className={({ isActive }) =>
                 cn('sidebar-link', isActive && 'active')
               }
