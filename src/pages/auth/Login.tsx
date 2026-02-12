@@ -22,7 +22,7 @@ export const Login: React.FC = () => {
     }
 
     setIsSubmitting(true);
-    const success = await login(email, password, selectedRole);
+    const success = await login(email, password);
     setIsSubmitting(false);
 
     if (success) {
