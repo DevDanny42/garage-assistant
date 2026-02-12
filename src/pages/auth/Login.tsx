@@ -27,7 +27,7 @@ export const Login: React.FC = () => {
 
     if (success) {
       toast.success('Welcome back!');
-      navigate(selectedRole === 'admin' ? '/dashboard' : '/my-dashboard');
+      navigate('/dashboard');
     } else {
       toast.error('Invalid credentials');
     }
