@@ -113,7 +113,7 @@ export const Login: React.FC = () => {
       </form>
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
-        Demo: Use any email/password. Select a role to see different access levels.
+        Demo: Use any email/password to sign in.
       </p>
     </div>
   );
