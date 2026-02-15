@@ -8,7 +8,7 @@ export const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  
+  const [selectedRole, setSelectedRole] = useState<'admin' | 'user'>('admin');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -22,12 +22,12 @@ export const Login: React.FC = () => {
     }
 
     setIsSubmitting(true);
-    const success = await login(email, password);
+    const success = await login(email, password, selectedRole);
     setIsSubmitting(false);
 
     if (success) {
       toast.success('Welcome back!');
-      navigate('/dashboard');
+      navigate(selectedRole === 'admin' ? '/dashboard' : '/my-dashboard');
     } else {
       toast.error('Invalid credentials');
     }
@@ -40,6 +40,32 @@ export const Login: React.FC = () => {
         <p className="mt-2 text-muted-foreground">
           Sign in to access your garage dashboard
         </p>
+      </div>
+
+      {/* Role Selector */}
+      <div className="flex rounded-lg border border-border overflow-hidden mb-6">
+        <button
+          type="button"
+          onClick={() => setSelectedRole('admin')}
+          className={`flex-1 py-2.5 text-sm font-medium transition-colors ${
+            selectedRole === 'admin'
+              ? 'bg-accent text-accent-foreground'
+              : 'bg-muted text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          Admin
+        </button>
+        <button
+          type="button"
+          onClick={() => setSelectedRole('user')}
+          className={`flex-1 py-2.5 text-sm font-medium transition-colors ${
+            selectedRole === 'user'
+              ? 'bg-accent text-accent-foreground'
+              : 'bg-muted text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          Customer
+        </button>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
