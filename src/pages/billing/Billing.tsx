@@ -213,7 +213,6 @@ export const Billing: React.FC = () => {
       <DataTable
         columns={columns}
         data={filteredInvoices}
-        onRowClick={(invoice) => navigate(`/billing/${invoice.id}/fill`)}
         emptyMessage="No invoices found"
       />
     </div>

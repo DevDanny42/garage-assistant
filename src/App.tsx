@@ -16,7 +16,6 @@ import { JobCards } from "@/pages/jobcards/JobCards";
 import { Inventory } from "@/pages/inventory/Inventory";
 import { Billing } from "@/pages/billing/Billing";
 import { CreateInvoice } from "@/pages/billing/CreateInvoice";
-import { FillInvoice } from "@/pages/billing/FillInvoice";
 import { Reports } from "@/pages/reports/Reports";
 import { Settings } from "@/pages/settings/Settings";
 import { UserDashboard } from "@/pages/user/UserDashboard";
@@ -50,7 +49,6 @@ const App = () => (
               <Route path="/inventory" element={<RoleGuard allowedRoles={['admin']}><Inventory /></RoleGuard>} />
               <Route path="/billing" element={<RoleGuard allowedRoles={['admin']}><Billing /></RoleGuard>} />
               <Route path="/billing/create" element={<RoleGuard allowedRoles={['admin']}><CreateInvoice /></RoleGuard>} />
-              <Route path="/billing/:id/fill" element={<RoleGuard allowedRoles={['admin']}><FillInvoice /></RoleGuard>} />
               <Route path="/reports" element={<RoleGuard allowedRoles={['admin']}><Reports /></RoleGuard>} />
               <Route path="/settings" element={<RoleGuard allowedRoles={['admin']}><Settings /></RoleGuard>} />
 
