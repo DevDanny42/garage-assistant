@@ -18,12 +18,11 @@ interface UnfilledBillCardProps {
 }
 
 export const UnfilledBillCard: React.FC<UnfilledBillCardProps> = ({ invoice, onSubmit }) => {
-  const { formatCurrency } = useSettings();
+  const { formatCurrency, taxRate } = useSettings();
   const [labourAmount, setLabourAmount] = useState('');
-  const [taxRate, setTaxRate] = useState('');
 
   const labour = parseFloat(labourAmount) || 0;
-  const tax = labour * ((parseFloat(taxRate) || 0) / 100);
+  const tax = labour * (taxRate / 100);
   const total = labour + tax;
 
   const handleSubmit = () => {
@@ -31,11 +30,7 @@ export const UnfilledBillCard: React.FC<UnfilledBillCardProps> = ({ invoice, onS
       toast.error('Please enter a valid labour amount');
       return;
     }
-    if (taxRate === '' || parseFloat(taxRate) < 0) {
-      toast.error('Please enter a valid tax rate');
-      return;
-    }
-    onSubmit(invoice.id, labour, parseFloat(taxRate));
+    onSubmit(invoice.id, labour, taxRate);
     toast.success(`Invoice ${invoice.invoiceNumber} updated`);
   };
 
@@ -58,39 +53,24 @@ export const UnfilledBillCard: React.FC<UnfilledBillCardProps> = ({ invoice, onS
         </div>
       </div>
 
-      {/* Form */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div>
-          <label className="text-sm font-medium text-muted-foreground mb-1 block">Labour Amount</label>
-          <input
-            type="number"
-            min="0"
-            step="0.01"
-            placeholder="0.00"
-            value={labourAmount}
-            onChange={(e) => setLabourAmount(e.target.value)}
-            className="input-field w-full"
-          />
-        </div>
-        <div>
-          <label className="text-sm font-medium text-muted-foreground mb-1 block">Tax Rate (%)</label>
-          <input
-            type="number"
-            min="0"
-            max="100"
-            step="0.1"
-            placeholder="0"
-            value={taxRate}
-            onChange={(e) => setTaxRate(e.target.value)}
-            className="input-field w-full"
-          />
-        </div>
+      {/* Form - only labour amount */}
+      <div className="max-w-xs">
+        <label className="text-sm font-medium text-muted-foreground mb-1 block">Labour Amount</label>
+        <input
+          type="number"
+          min="0"
+          step="0.01"
+          placeholder="0.00"
+          value={labourAmount}
+          onChange={(e) => setLabourAmount(e.target.value)}
+          className="input-field w-full"
+        />
       </div>
 
       {/* Summary & Submit */}
       <div className="flex items-center justify-between pt-2 border-t border-border">
         <div className="flex gap-4 text-sm">
-          <span className="text-muted-foreground">Tax: <span className="text-foreground font-medium">{formatCurrency(tax)}</span></span>
+          <span className="text-muted-foreground">Tax ({taxRate}%): <span className="text-foreground font-medium">{formatCurrency(tax)}</span></span>
           <span className="text-muted-foreground">Total: <span className="text-foreground font-bold">{formatCurrency(total)}</span></span>
         </div>
         <button onClick={handleSubmit} className="btn-primary text-sm px-4 py-2">
