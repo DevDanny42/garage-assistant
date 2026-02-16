@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-type PaymentStatus = 'paid' | 'pending' | 'overdue' | 'cancelled';
+type PaymentStatus = 'paid' | 'pending' | 'overdue' | 'cancelled' | 'unfilled';
 
 interface Invoice {
   id: string;
@@ -34,6 +34,8 @@ const mockInvoices: Invoice[] = [
   { id: '6', invoiceNumber: 'INV-2024-006', customer: 'Lisa Anderson', jobCard: 'JC-2024-006', amount: 480, tax: 70, total: 550, status: 'overdue', dueDate: '2024-03-15', createdAt: '2024-03-10' },
   { id: '7', invoiceNumber: 'INV-2024-007', customer: 'David Martinez', jobCard: 'JC-2024-007', amount: 180, tax: 20, total: 200, status: 'cancelled', dueDate: '2024-03-20', createdAt: '2024-03-15' },
   { id: '8', invoiceNumber: 'INV-2024-008', customer: 'Jennifer Taylor', jobCard: 'JC-2024-001', amount: 130, tax: 20, total: 150, status: 'pending', dueDate: '2024-03-27', createdAt: '2024-03-18' },
+  { id: '9', invoiceNumber: 'INV-2024-009', customer: 'Chris Evans', jobCard: 'JC-2024-009', amount: 0, tax: 0, total: 0, status: 'unfilled', dueDate: '2024-03-30', createdAt: '2024-03-19' },
+  { id: '10', invoiceNumber: 'INV-2024-010', customer: 'Anna White', jobCard: 'JC-2024-010', amount: 0, tax: 0, total: 0, status: 'unfilled', dueDate: '2024-03-31', createdAt: '2024-03-20' },
 ];
 
 const statusConfig: Record<PaymentStatus, { label: string; icon: React.ElementType; className: string }> = {
@@ -41,6 +43,7 @@ const statusConfig: Record<PaymentStatus, { label: string; icon: React.ElementTy
   pending: { label: 'Pending', icon: Clock, className: 'text-status-pending bg-status-pending/10' },
   overdue: { label: 'Overdue', icon: XCircle, className: 'text-status-cancelled bg-status-cancelled/10' },
   cancelled: { label: 'Cancelled', icon: XCircle, className: 'text-muted-foreground bg-muted' },
+  unfilled: { label: 'Unfilled', icon: Clock, className: 'text-status-pending bg-status-pending/10' },
 };
 
 export const Billing: React.FC = () => {
@@ -178,7 +181,7 @@ export const Billing: React.FC = () => {
 
       {/* Filters */}
       <div className="flex flex-wrap gap-2">
-        {(['all', 'paid', 'pending', 'overdue', 'cancelled'] as const).map((status) => (
+        {(['all', 'paid', 'pending', 'overdue', 'cancelled', 'unfilled'] as const).map((status) => (
           <button
             key={status}
             onClick={() => setStatusFilter(status)}
