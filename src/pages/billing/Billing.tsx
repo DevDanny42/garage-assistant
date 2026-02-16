@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Plus, Search, Download, MoreVertical, Receipt, CheckCircle, Clock, XCircle } from 'lucide-react';
 import { DataTable } from '@/components/DataTable';
+import { UnfilledBillCard } from '@/components/UnfilledBillCard';
 import { useSettings } from '@/context/SettingsContext';
+import { toast } from 'sonner';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -50,8 +52,25 @@ export const Billing: React.FC = () => {
   const { formatCurrency } = useSettings();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<PaymentStatus | 'all'>('all');
+  const [invoices, setInvoices] = useState<Invoice[]>(mockInvoices);
 
-  const filteredInvoices = mockInvoices.filter((invoice) => {
+  const handleUnfilledSubmit = (id: string, labourAmount: number, taxRate: number) => {
+    setInvoices((prev) =>
+      prev.map((inv) =>
+        inv.id === id
+          ? {
+              ...inv,
+              amount: labourAmount,
+              tax: labourAmount * (taxRate / 100),
+              total: labourAmount + labourAmount * (taxRate / 100),
+              status: 'pending' as PaymentStatus,
+            }
+          : inv
+      )
+    );
+  };
+
+  const filteredInvoices = invoices.filter((invoice) => {
     const matchesSearch =
       invoice.invoiceNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
       invoice.customer.toLowerCase().includes(searchTerm.toLowerCase());
@@ -59,9 +78,10 @@ export const Billing: React.FC = () => {
     return matchesSearch && matchesStatus;
   });
 
-  const totalRevenue = mockInvoices.filter((i) => i.status === 'paid').reduce((sum, i) => sum + i.total, 0);
-  const pendingAmount = mockInvoices.filter((i) => i.status === 'pending').reduce((sum, i) => sum + i.total, 0);
-  const overdueAmount = mockInvoices.filter((i) => i.status === 'overdue').reduce((sum, i) => sum + i.total, 0);
+  const totalRevenue = invoices.filter((i) => i.status === 'paid').reduce((sum, i) => sum + i.total, 0);
+  const pendingAmount = invoices.filter((i) => i.status === 'pending').reduce((sum, i) => sum + i.total, 0);
+  const overdueAmount = invoices.filter((i) => i.status === 'overdue').reduce((sum, i) => sum + i.total, 0);
+  const unfilledInvoices = invoices.filter((i) => i.status === 'unfilled');
 
   const columns = [
     {
@@ -175,7 +195,7 @@ export const Billing: React.FC = () => {
         </div>
         <div className="bg-card rounded-xl p-4 border border-border">
           <p className="text-sm text-muted-foreground">Total Invoices</p>
-          <p className="text-2xl font-bold text-foreground mt-1">{mockInvoices.length}</p>
+          <p className="text-2xl font-bold text-foreground mt-1">{invoices.length}</p>
         </div>
       </div>
 
@@ -210,12 +230,31 @@ export const Billing: React.FC = () => {
         </div>
       </div>
 
-      {/* Data Table */}
-      <DataTable
-        columns={columns}
-        data={filteredInvoices}
-        emptyMessage="No invoices found"
-      />
+      {/* Unfilled Bills Section */}
+      {statusFilter === 'unfilled' ? (
+        unfilledInvoices.length > 0 ? (
+          <div className="space-y-4">
+            {unfilledInvoices.map((invoice) => (
+              <UnfilledBillCard
+                key={invoice.id}
+                invoice={invoice}
+                onSubmit={handleUnfilledSubmit}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="bg-card rounded-xl border border-border p-8 text-center">
+            <p className="text-muted-foreground">No unfilled invoices</p>
+          </div>
+        )
+      ) : (
+        /* Data Table */
+        <DataTable
+          columns={columns}
+          data={filteredInvoices}
+          emptyMessage="No invoices found"
+        />
+      )}
     </div>
   );
 };
