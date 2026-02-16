@@ -4,14 +4,14 @@ import { toast } from 'sonner';
 import { useSettings } from '@/context/SettingsContext';
 
 export const Settings: React.FC = () => {
-  const { theme, setTheme, currency, setCurrency } = useSettings();
+  const { theme, setTheme, currency, setCurrency, taxRate, setTaxRate } = useSettings();
   const [activeTab, setActiveTab] = useState('general');
   const [formData, setFormData] = useState({
     garageName: 'AutoGarage Pro',
     email: 'contact@autogarage.com',
     phone: '+1 234-567-8900',
     address: '123 Main Street, City, State 12345',
-    taxRate: '12',
+    taxRate: String(taxRate),
     emailNotifications: true,
     smsNotifications: false,
     jobAlerts: true,
@@ -19,6 +19,7 @@ export const Settings: React.FC = () => {
   });
 
   const handleSave = () => {
+    setTaxRate(parseFloat(formData.taxRate) || 0);
     toast.success('Settings saved successfully!');
   };
 
