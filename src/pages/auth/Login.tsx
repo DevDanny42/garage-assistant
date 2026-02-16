@@ -8,7 +8,7 @@ export const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<'admin' | 'user'>('admin');
+  const [selectedRole, setSelectedRole] = useState<'admin' | 'user'>('user');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -40,32 +40,6 @@ export const Login: React.FC = () => {
         <p className="mt-2 text-muted-foreground">
           Sign in to access your garage dashboard
         </p>
-      </div>
-
-      {/* Role Selector */}
-      <div className="flex rounded-lg border border-border overflow-hidden mb-6">
-        <button
-          type="button"
-          onClick={() => setSelectedRole('admin')}
-          className={`flex-1 py-2.5 text-sm font-medium transition-colors ${
-            selectedRole === 'admin'
-              ? 'bg-accent text-accent-foreground'
-              : 'bg-muted text-muted-foreground hover:text-foreground'
-          }`}
-        >
-          Admin
-        </button>
-        <button
-          type="button"
-          onClick={() => setSelectedRole('user')}
-          className={`flex-1 py-2.5 text-sm font-medium transition-colors ${
-            selectedRole === 'user'
-              ? 'bg-accent text-accent-foreground'
-              : 'bg-muted text-muted-foreground hover:text-foreground'
-          }`}
-        >
-          Customer
-        </button>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
@@ -108,6 +82,28 @@ export const Login: React.FC = () => {
           </div>
         </div>
 
+        {/* Role Selection */}
+        <div>
+          <label className="block text-sm font-medium text-foreground mb-2">
+            Login As
+          </label>
+          <div className="grid grid-cols-3 gap-2">
+            {(['admin', 'user'] as const).map((role) => (
+              <button
+                key={role}
+                type="button"
+                onClick={() => setSelectedRole(role)}
+                className={`py-2 px-3 rounded-lg text-sm font-medium border transition-colors capitalize ${
+                  selectedRole === role
+                    ? 'bg-accent text-accent-foreground border-accent'
+                    : 'bg-muted text-muted-foreground border-border hover:border-accent/50'
+                }`}
+              >
+                {role}
+              </button>
+            ))}
+          </div>
+        </div>
 
         <div className="flex items-center justify-between">
           <label className="flex items-center gap-2 cursor-pointer">
@@ -139,7 +135,7 @@ export const Login: React.FC = () => {
       </form>
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
-        Demo: Use any email/password to sign in.
+        Demo: Use any email/password. Select a role to see different access levels.
       </p>
     </div>
   );

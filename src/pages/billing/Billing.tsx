@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Plus, Search, Download, MoreVertical, Receipt, CheckCircle, Clock, XCircle } from 'lucide-react';
 import { DataTable } from '@/components/DataTable';
 import { useSettings } from '@/context/SettingsContext';
@@ -46,7 +45,6 @@ const statusConfig: Record<PaymentStatus, { label: string; icon: React.ElementTy
 
 export const Billing: React.FC = () => {
   const { formatCurrency } = useSettings();
-  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<PaymentStatus | 'all'>('all');
 
@@ -151,7 +149,7 @@ export const Billing: React.FC = () => {
             <Download className="h-4 w-4" />
             Export
           </button>
-          <button className="btn-primary" onClick={() => navigate('/billing/create')}>
+          <button className="btn-primary">
             <Plus className="h-4 w-4" />
             New Invoice
           </button>
