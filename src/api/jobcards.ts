@@ -16,9 +16,9 @@ export interface JobCard {
 export type CreateJobCardDto = Omit<JobCard, 'id' | 'jobNumber' | 'createdAt'>;
 
 export const jobCardsApi = {
-  getAll: () => apiClient.get<JobCard[]>('/job-cards'),
-  getById: (id: string) => apiClient.get<JobCard>(`/job-cards/${id}`),
-  create: (data: CreateJobCardDto) => apiClient.post<JobCard>('/job-cards', data),
-  update: (id: string, data: Partial<JobCard>) => apiClient.put<JobCard>(`/job-cards/${id}`, data),
-  delete: (id: string) => apiClient.delete<void>(`/job-cards/${id}`),
+  getAll: (): Promise<JobCard[]> => apiClient.get('/job-cards'),
+  getById: (id: string): Promise<JobCard> => apiClient.get(`/job-cards/${id}`),
+  create: (data: CreateJobCardDto): Promise<JobCard> => apiClient.post('/job-cards', data),
+  update: (id: string, data: Partial<JobCard>): Promise<JobCard> => apiClient.put(`/job-cards/${id}`, data),
+  delete: (id: string): Promise<void> => apiClient.delete(`/job-cards/${id}`),
 };

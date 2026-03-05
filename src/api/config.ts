@@ -1,83 +1,42 @@
+import axios from 'axios';
+
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
 
-interface RequestOptions extends RequestInit {
-  params?: Record<string, string>;
-}
+const apiClient = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
-class ApiClient {
-  private baseUrl: string;
-
-  constructor(baseUrl: string) {
-    this.baseUrl = baseUrl;
-  }
-
-  private getAuthHeaders(): Record<string, string> {
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    };
-    const user = localStorage.getItem('garage_user');
-    if (user) {
-      try {
-        const parsed = JSON.parse(user);
-        if (parsed.token) {
-          headers['Authorization'] = `Bearer ${parsed.token}`;
-        }
-      } catch {
-        // ignore
+// Attach auth token to every request
+apiClient.interceptors.request.use((config) => {
+  const user = localStorage.getItem('garage_user');
+  if (user) {
+    try {
+      const parsed = JSON.parse(user);
+      if (parsed.token) {
+        config.headers.Authorization = `Bearer ${parsed.token}`;
       }
+    } catch {
+      // ignore
     }
-    return headers;
   }
+  return config;
+});
 
-  private buildUrl(path: string, params?: Record<string, string>): string {
-    const url = new URL(`${this.baseUrl}${path}`);
-    if (params) {
-      Object.entries(params).forEach(([key, value]) => url.searchParams.set(key, value));
-    }
-    return url.toString();
+// Extract response data & handle errors
+apiClient.interceptors.response.use(
+  (response) => response.data,
+  (error) => {
+    const status = error.response?.status || 0;
+    const message = error.response?.data?.message || error.message || 'Network error';
+    return Promise.reject(new ApiError(status, message));
   }
-
-  private async request<T>(path: string, options: RequestOptions = {}): Promise<T> {
-    const { params, ...fetchOptions } = options;
-    const url = this.buildUrl(path, params);
-
-    const response = await fetch(url, {
-      ...fetchOptions,
-      headers: {
-        ...this.getAuthHeaders(),
-        ...fetchOptions.headers,
-      },
-    });
-
-    if (!response.ok) {
-      const errorBody = await response.text();
-      throw new ApiError(response.status, errorBody || response.statusText);
-    }
-
-    if (response.status === 204) return undefined as T;
-    return response.json();
-  }
-
-  get<T>(path: string, params?: Record<string, string>) {
-    return this.request<T>(path, { method: 'GET', params });
-  }
-
-  post<T>(path: string, body?: unknown) {
-    return this.request<T>(path, { method: 'POST', body: body ? JSON.stringify(body) : undefined });
-  }
-
-  put<T>(path: string, body?: unknown) {
-    return this.request<T>(path, { method: 'PUT', body: body ? JSON.stringify(body) : undefined });
-  }
-
-  delete<T>(path: string) {
-    return this.request<T>(path, { method: 'DELETE' });
-  }
-}
+);
 
 export class ApiError extends Error {
   status: number;
-
   constructor(status: number, message: string) {
     super(message);
     this.status = status;
@@ -85,4 +44,4 @@ export class ApiError extends Error {
   }
 }
 
-export const apiClient = new ApiClient(API_BASE_URL);
+export { apiClient };
