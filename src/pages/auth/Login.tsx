@@ -4,7 +4,9 @@ import { Eye, EyeOff, LogIn } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
 
-export const Login: React.FC = () => {
+const LOGIN_TOAST_ID = 'login-status';
+
+export const Login = React.forwardRef<HTMLDivElement>((_, ref) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -15,9 +17,11 @@ export const Login: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
+    if (isSubmitting) return;
+
     if (!email || !password) {
-      toast.error('Please fill in all fields');
+      toast.error('Please fill in all fields', { id: LOGIN_TOAST_ID });
       return;
     }
 
@@ -26,15 +30,15 @@ export const Login: React.FC = () => {
     setIsSubmitting(false);
 
     if (success) {
-      toast.success('Welcome back!');
+      toast.success('Welcome back!', { id: LOGIN_TOAST_ID });
       navigate(selectedRole === 'admin' ? '/dashboard' : '/my-dashboard');
     } else {
-      toast.error('Invalid credentials');
+      toast.error('Login failed. Check backend /auth/login and API URL.', { id: LOGIN_TOAST_ID });
     }
   };
 
   return (
-    <div className="w-full max-w-md animate-fade-in">
+    <div ref={ref} className="w-full max-w-md animate-fade-in">
       <div className="text-center mb-8">
         <h2 className="text-3xl font-bold text-foreground">Welcome Back</h2>
         <p className="mt-2 text-muted-foreground">
@@ -105,19 +109,6 @@ export const Login: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex items-center justify-between">
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              className="h-4 w-4 rounded border-border text-accent focus:ring-accent"
-            />
-            <span className="text-sm text-muted-foreground">Remember me</span>
-          </label>
-          <a href="#" className="text-sm text-accent hover:underline">
-            Forgot password?
-          </a>
-        </div>
-
         <button
           type="submit"
           disabled={isSubmitting}
@@ -142,4 +133,6 @@ export const Login: React.FC = () => {
       </p>
     </div>
   );
-};
+});
+
+Login.displayName = 'Login';
