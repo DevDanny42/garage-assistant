@@ -19,9 +19,9 @@ export interface Invoice {
 export type CreateInvoiceDto = Omit<Invoice, 'id' | 'invoiceNumber' | 'createdAt'>;
 
 export const billingApi = {
-  getAll: () => apiClient.get<Invoice[]>('/invoices'),
-  getById: (id: string) => apiClient.get<Invoice>(`/invoices/${id}`),
-  create: (data: CreateInvoiceDto) => apiClient.post<Invoice>('/invoices', data),
-  update: (id: string, data: Partial<Invoice>) => apiClient.put<Invoice>(`/invoices/${id}`, data),
-  delete: (id: string) => apiClient.delete<void>(`/invoices/${id}`),
+  getAll: (): Promise<Invoice[]> => apiClient.get('/invoices'),
+  getById: (id: string): Promise<Invoice> => apiClient.get(`/invoices/${id}`),
+  create: (data: CreateInvoiceDto): Promise<Invoice> => apiClient.post('/invoices', data),
+  update: (id: string, data: Partial<Invoice>): Promise<Invoice> => apiClient.put(`/invoices/${id}`, data),
+  delete: (id: string): Promise<void> => apiClient.delete(`/invoices/${id}`),
 };

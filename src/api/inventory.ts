@@ -16,9 +16,9 @@ export interface InventoryItem {
 export type CreateInventoryItemDto = Omit<InventoryItem, 'id' | 'lastUpdated'>;
 
 export const inventoryApi = {
-  getAll: () => apiClient.get<InventoryItem[]>('/inventory'),
-  getById: (id: string) => apiClient.get<InventoryItem>(`/inventory/${id}`),
-  create: (data: CreateInventoryItemDto) => apiClient.post<InventoryItem>('/inventory', data),
-  update: (id: string, data: Partial<InventoryItem>) => apiClient.put<InventoryItem>(`/inventory/${id}`, data),
-  delete: (id: string) => apiClient.delete<void>(`/inventory/${id}`),
+  getAll: (): Promise<InventoryItem[]> => apiClient.get('/inventory'),
+  getById: (id: string): Promise<InventoryItem> => apiClient.get(`/inventory/${id}`),
+  create: (data: CreateInventoryItemDto): Promise<InventoryItem> => apiClient.post('/inventory', data),
+  update: (id: string, data: Partial<InventoryItem>): Promise<InventoryItem> => apiClient.put(`/inventory/${id}`, data),
+  delete: (id: string): Promise<void> => apiClient.delete(`/inventory/${id}`),
 };

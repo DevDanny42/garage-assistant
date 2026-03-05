@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { authApi } from '@/api/auth';
 
 interface User {
   id: string;
@@ -13,6 +14,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string, role?: 'admin' | 'user') => Promise<boolean>;
+  signup: (name: string, email: string, phone: string, password: string) => Promise<boolean>;
   logout: () => void;
 }
 
@@ -35,10 +37,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check for existing session
     const storedUser = localStorage.getItem('garage_user');
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch {
+        localStorage.removeItem('garage_user');
+      }
     }
     setIsLoading(false);
   }, []);
@@ -46,23 +51,29 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (email: string, password: string, role: 'admin' | 'user' = 'user'): Promise<boolean> => {
     setIsLoading(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      if (email && password) {
-        const roleNames = { admin: 'Admin', user: 'Customer' };
-        const mockUser: User = {
-          id: '1',
-          name: roleNames[role],
-          email: email,
-          role: role,
-        };
-        setUser(mockUser);
-        localStorage.setItem('garage_user', JSON.stringify(mockUser));
-        return true;
-      }
-      return false;
+      const response = await authApi.login({ email, password });
+      const userData = response.user;
+      setUser(userData);
+      localStorage.setItem('garage_user', JSON.stringify({ ...userData, token: response.token }));
+      return true;
     } catch (error) {
       console.error('Login error:', error);
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const signup = async (name: string, email: string, phone: string, password: string): Promise<boolean> => {
+    setIsLoading(true);
+    try {
+      const response = await authApi.signup({ name, email, phone, password });
+      const userData = response.user;
+      setUser(userData);
+      localStorage.setItem('garage_user', JSON.stringify({ ...userData, token: response.token }));
+      return true;
+    } catch (error) {
+      console.error('Signup error:', error);
       return false;
     } finally {
       setIsLoading(false);
@@ -81,6 +92,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         isAuthenticated: !!user,
         isLoading,
         login,
+        signup,
         logout,
       }}
     >

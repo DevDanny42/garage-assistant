@@ -14,9 +14,9 @@ export interface Customer {
 export type CreateCustomerDto = Omit<Customer, 'id' | 'vehicleCount' | 'totalSpent' | 'createdAt'>;
 
 export const customersApi = {
-  getAll: () => apiClient.get<Customer[]>('/customers'),
-  getById: (id: string) => apiClient.get<Customer>(`/customers/${id}`),
-  create: (data: CreateCustomerDto) => apiClient.post<Customer>('/customers', data),
-  update: (id: string, data: Partial<Customer>) => apiClient.put<Customer>(`/customers/${id}`, data),
-  delete: (id: string) => apiClient.delete<void>(`/customers/${id}`),
+  getAll: (): Promise<Customer[]> => apiClient.get('/customers'),
+  getById: (id: string): Promise<Customer> => apiClient.get(`/customers/${id}`),
+  create: (data: CreateCustomerDto): Promise<Customer> => apiClient.post('/customers', data),
+  update: (id: string, data: Partial<Customer>): Promise<Customer> => apiClient.put(`/customers/${id}`, data),
+  delete: (id: string): Promise<void> => apiClient.delete(`/customers/${id}`),
 };
