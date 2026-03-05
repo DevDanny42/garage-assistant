@@ -1,48 +1,75 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Eye, EyeOff, LogIn } from 'lucide-react';
+import { Eye, EyeOff, UserPlus } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
 
-export const Login: React.FC = () => {
+export const Signup: React.FC = () => {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<'admin' | 'user'>('user');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { login } = useAuth();
+  const { signup } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!email || !password) {
+
+    if (!name || !email || !phone || !password || !confirmPassword) {
       toast.error('Please fill in all fields');
       return;
     }
 
+    if (password !== confirmPassword) {
+      toast.error('Passwords do not match');
+      return;
+    }
+
+    if (password.length < 6) {
+      toast.error('Password must be at least 6 characters');
+      return;
+    }
+
     setIsSubmitting(true);
-    const success = await login(email, password, selectedRole);
+    const success = await signup(name, email, phone, password);
     setIsSubmitting(false);
 
     if (success) {
-      toast.success('Welcome back!');
-      navigate(selectedRole === 'admin' ? '/dashboard' : '/my-dashboard');
+      toast.success('Account created successfully!');
+      navigate('/my-dashboard');
     } else {
-      toast.error('Invalid credentials');
+      toast.error('Signup failed. Please try again.');
     }
   };
 
   return (
     <div className="w-full max-w-md animate-fade-in">
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-foreground">Welcome Back</h2>
+        <h2 className="text-3xl font-bold text-foreground">Create Account</h2>
         <p className="mt-2 text-muted-foreground">
-          Sign in to access your garage dashboard
+          Register to track your vehicle services
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
+            Full Name
+          </label>
+          <input
+            id="name"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="John Smith"
+            className="input-field"
+            autoComplete="name"
+          />
+        </div>
+
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
             Email Address
@@ -52,9 +79,24 @@ export const Login: React.FC = () => {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="admin@garage.com"
+            placeholder="john@example.com"
             className="input-field"
             autoComplete="email"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="phone" className="block text-sm font-medium text-foreground mb-2">
+            Phone Number
+          </label>
+          <input
+            id="phone"
+            type="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="+1 234-567-8901"
+            className="input-field"
+            autoComplete="tel"
           />
         </div>
 
@@ -70,7 +112,7 @@ export const Login: React.FC = () => {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               className="input-field pr-12"
-              autoComplete="current-password"
+              autoComplete="new-password"
             />
             <button
               type="button"
@@ -82,40 +124,19 @@ export const Login: React.FC = () => {
           </div>
         </div>
 
-        {/* Role Selection */}
         <div>
-          <label className="block text-sm font-medium text-foreground mb-2">
-            Login As
+          <label htmlFor="confirmPassword" className="block text-sm font-medium text-foreground mb-2">
+            Confirm Password
           </label>
-          <div className="grid grid-cols-3 gap-2">
-            {(['admin', 'user'] as const).map((role) => (
-              <button
-                key={role}
-                type="button"
-                onClick={() => setSelectedRole(role)}
-                className={`py-2 px-3 rounded-lg text-sm font-medium border transition-colors capitalize ${
-                  selectedRole === role
-                    ? 'bg-accent text-accent-foreground border-accent'
-                    : 'bg-muted text-muted-foreground border-border hover:border-accent/50'
-                }`}
-              >
-                {role}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between">
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              className="h-4 w-4 rounded border-border text-accent focus:ring-accent"
-            />
-            <span className="text-sm text-muted-foreground">Remember me</span>
-          </label>
-          <a href="#" className="text-sm text-accent hover:underline">
-            Forgot password?
-          </a>
+          <input
+            id="confirmPassword"
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder="••••••••"
+            className="input-field"
+            autoComplete="new-password"
+          />
         </div>
 
         <button
@@ -127,17 +148,17 @@ export const Login: React.FC = () => {
             <div className="h-5 w-5 animate-spin rounded-full border-2 border-accent-foreground border-t-transparent" />
           ) : (
             <>
-              <LogIn className="h-5 w-5" />
-              Sign In
+              <UserPlus className="h-5 w-5" />
+              Create Account
             </>
           )}
         </button>
       </form>
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
-        Don't have an account?{' '}
-        <Link to="/signup" className="text-accent hover:underline font-medium">
-          Sign Up
+        Already have an account?{' '}
+        <Link to="/login" className="text-accent hover:underline font-medium">
+          Sign In
         </Link>
       </p>
     </div>
