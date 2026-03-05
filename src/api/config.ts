@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -30,13 +30,20 @@ apiClient.interceptors.response.use(
   (response) => response.data,
   (error) => {
     const status = error.response?.status || 0;
-    const message = error.response?.data?.message || error.message || 'Network error';
+    const responseData = error.response?.data;
+    const message =
+      (typeof responseData === 'string' && responseData) ||
+      responseData?.message ||
+      (status === 0 ? 'Cannot connect to backend. Configure VITE_API_URL and start your API server.' : error.message) ||
+      'Request failed';
+
     return Promise.reject(new ApiError(status, message));
   }
 );
 
 export class ApiError extends Error {
   status: number;
+
   constructor(status: number, message: string) {
     super(message);
     this.status = status;

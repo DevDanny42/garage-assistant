@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { authApi } from '@/api/auth';
+import { ApiError } from '@/api/config';
 
 interface User {
   id: string;
@@ -19,6 +20,16 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+const getAuthErrorMessage = (error: unknown, action: 'Login' | 'Signup'): string => {
+  if (error instanceof ApiError) {
+    if (error.status === 0) {
+      return 'Cannot connect to backend. Configure VITE_API_URL and ensure server is running.';
+    }
+    return error.message || `${action} failed`;
+  }
+  return `${action} failed`;
+};
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -52,12 +63,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(true);
     try {
       const response = await authApi.login({ email, password });
-      const userData = response.user;
+      const userData: User = {
+        ...response.user,
+        role: response.user?.role ?? role,
+      };
       setUser(userData);
       localStorage.setItem('garage_user', JSON.stringify({ ...userData, token: response.token }));
       return true;
     } catch (error) {
-      console.error('Login error:', error);
+      console.error('Login error:', getAuthErrorMessage(error, 'Login'));
       return false;
     } finally {
       setIsLoading(false);
@@ -68,12 +82,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(true);
     try {
       const response = await authApi.signup({ name, email, phone, password });
-      const userData = response.user;
+      const userData: User = {
+        ...response.user,
+        role: response.user?.role ?? 'user',
+      };
       setUser(userData);
       localStorage.setItem('garage_user', JSON.stringify({ ...userData, token: response.token }));
       return true;
     } catch (error) {
-      console.error('Signup error:', error);
+      console.error('Signup error:', getAuthErrorMessage(error, 'Signup'));
       return false;
     } finally {
       setIsLoading(false);

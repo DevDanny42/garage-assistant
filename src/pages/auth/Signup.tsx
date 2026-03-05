@@ -4,7 +4,9 @@ import { Eye, EyeOff, UserPlus } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
 
-export const Signup: React.FC = () => {
+const SIGNUP_TOAST_ID = 'signup-status';
+
+export const Signup = React.forwardRef<HTMLDivElement>((_, ref) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -18,18 +20,20 @@ export const Signup: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (isSubmitting) return;
+
     if (!name || !email || !phone || !password || !confirmPassword) {
-      toast.error('Please fill in all fields');
+      toast.error('Please fill in all fields', { id: SIGNUP_TOAST_ID });
       return;
     }
 
     if (password !== confirmPassword) {
-      toast.error('Passwords do not match');
+      toast.error('Passwords do not match', { id: SIGNUP_TOAST_ID });
       return;
     }
 
     if (password.length < 6) {
-      toast.error('Password must be at least 6 characters');
+      toast.error('Password must be at least 6 characters', { id: SIGNUP_TOAST_ID });
       return;
     }
 
@@ -38,15 +42,15 @@ export const Signup: React.FC = () => {
     setIsSubmitting(false);
 
     if (success) {
-      toast.success('Account created successfully!');
+      toast.success('Account created successfully!', { id: SIGNUP_TOAST_ID });
       navigate('/my-dashboard');
     } else {
-      toast.error('Signup failed. Please try again.');
+      toast.error('Signup failed. Check backend /auth/signup and API URL.', { id: SIGNUP_TOAST_ID });
     }
   };
 
   return (
-    <div className="w-full max-w-md animate-fade-in">
+    <div ref={ref} className="w-full max-w-md animate-fade-in">
       <div className="text-center mb-8">
         <h2 className="text-3xl font-bold text-foreground">Create Account</h2>
         <p className="mt-2 text-muted-foreground">
@@ -163,4 +167,6 @@ export const Signup: React.FC = () => {
       </p>
     </div>
   );
-};
+});
+
+Signup.displayName = 'Signup';
