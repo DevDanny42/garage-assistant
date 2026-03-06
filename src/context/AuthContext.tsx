@@ -15,7 +15,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string, role?: 'admin' | 'user') => Promise<boolean>;
-  signup: (name: string, email: string, phone: string, password: string) => Promise<boolean>;
+  signup: (name: string, email: string, phone: string, password: string, document?: File) => Promise<boolean>;
   logout: () => void;
 }
 
@@ -78,10 +78,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const signup = async (name: string, email: string, phone: string, password: string): Promise<boolean> => {
+  const signup = async (name: string, email: string, phone: string, password: string, document?: File): Promise<boolean> => {
     setIsLoading(true);
     try {
-      const response = await authApi.signup({ name, email, phone, password });
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('email', email);
+      formData.append('phone', phone);
+      formData.append('password', password);
+      if (document) formData.append('document', document);
+      const response = await authApi.signup(formData);
       const userData: User = {
         ...response.user,
         role: response.user?.role ?? 'user',

@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Eye, EyeOff, UserPlus } from 'lucide-react';
+import { Eye, EyeOff, UserPlus, Upload, X, FileText } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
 
 const SIGNUP_TOAST_ID = 'signup-status';
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
 
 export const Signup = React.forwardRef<HTMLDivElement>((_, ref) => {
   const [name, setName] = useState('');
@@ -14,36 +16,59 @@ export const Signup = React.forwardRef<HTMLDivElement>((_, ref) => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [document, setDocument] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { signup } = useAuth();
   const navigate = useNavigate();
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      toast.error('Please upload a JPG, PNG, WebP, or PDF file', { id: SIGNUP_TOAST_ID });
+      return;
+    }
+    if (file.size > MAX_FILE_SIZE) {
+      toast.error('File size must be under 5MB', { id: SIGNUP_TOAST_ID });
+      return;
+    }
+    setDocument(file);
+  };
+
+  const removeDocument = () => {
+    setDocument(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (isSubmitting) return;
 
     if (!name || !email || !phone || !password || !confirmPassword) {
       toast.error('Please fill in all fields', { id: SIGNUP_TOAST_ID });
       return;
     }
-
     if (password !== confirmPassword) {
       toast.error('Passwords do not match', { id: SIGNUP_TOAST_ID });
       return;
     }
-
     if (password.length < 6) {
       toast.error('Password must be at least 6 characters', { id: SIGNUP_TOAST_ID });
       return;
     }
+    if (!document) {
+      toast.error('Please upload an ID proof document', { id: SIGNUP_TOAST_ID });
+      return;
+    }
 
     setIsSubmitting(true);
-    const success = await signup(name, email, phone, password);
+    const success = await signup(name, email, phone, password, document);
     setIsSubmitting(false);
 
     if (success) {
-      toast.success('Account created successfully!', { id: SIGNUP_TOAST_ID });
-      navigate('/my-dashboard');
+      toast.success('Account submitted for approval! You will be notified once verified.', { id: SIGNUP_TOAST_ID });
+      navigate('/login');
     } else {
       toast.error('Signup failed. Check backend /auth/signup and API URL.', { id: SIGNUP_TOAST_ID });
     }
@@ -104,6 +129,45 @@ export const Signup = React.forwardRef<HTMLDivElement>((_, ref) => {
           />
         </div>
 
+        {/* ID Proof Upload */}
+        <div>
+          <label className="block text-sm font-medium text-foreground mb-2">
+            ID Proof Document <span className="text-destructive">*</span>
+          </label>
+          <p className="text-xs text-muted-foreground mb-2">
+            Upload a government ID (Aadhar, PAN, Driving License, Passport). JPG, PNG, or PDF — max 5MB.
+          </p>
+          {document ? (
+            <div className="flex items-center gap-3 p-3 rounded-lg border border-border bg-muted/50">
+              <FileText className="h-5 w-5 text-primary shrink-0" />
+              <span className="text-sm text-foreground truncate flex-1">{document.name}</span>
+              <button
+                type="button"
+                onClick={removeDocument}
+                className="p-1 hover:bg-destructive/10 rounded transition-colors"
+              >
+                <X className="h-4 w-4 text-destructive" />
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="w-full flex items-center justify-center gap-2 p-4 rounded-lg border-2 border-dashed border-border hover:border-primary/50 hover:bg-muted/30 transition-colors text-muted-foreground hover:text-foreground"
+            >
+              <Upload className="h-5 w-5" />
+              <span className="text-sm">Click to upload document</span>
+            </button>
+          )}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".jpg,.jpeg,.png,.webp,.pdf"
+            onChange={handleFileChange}
+            className="hidden"
+          />
+        </div>
+
         <div>
           <label htmlFor="password" className="block text-sm font-medium text-foreground mb-2">
             Password
@@ -159,7 +223,11 @@ export const Signup = React.forwardRef<HTMLDivElement>((_, ref) => {
         </button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-muted-foreground">
+      <p className="mt-4 text-center text-xs text-muted-foreground">
+        Your account will be reviewed by an admin before activation.
+      </p>
+
+      <p className="mt-4 text-center text-sm text-muted-foreground">
         Already have an account?{' '}
         <Link to="/login" className="text-accent hover:underline font-medium">
           Sign In
