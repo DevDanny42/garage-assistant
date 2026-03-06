@@ -4,9 +4,6 @@ import { Eye, EyeOff, UserPlus } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
 
-const SIGNUP_TOAST_ID = 'signup-status';
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
 
 export const Signup = React.forwardRef<HTMLDivElement>((_, ref) => {
   const [name, setName] = useState('');
@@ -16,30 +13,10 @@ export const Signup = React.forwardRef<HTMLDivElement>((_, ref) => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [document, setDocument] = useState<File | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const { signup } = useAuth();
   const navigate = useNavigate();
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (!ALLOWED_TYPES.includes(file.type)) {
-      toast.error('Please upload a JPG, PNG, WebP, or PDF file', { id: SIGNUP_TOAST_ID });
-      return;
-    }
-    if (file.size > MAX_FILE_SIZE) {
-      toast.error('File size must be under 5MB', { id: SIGNUP_TOAST_ID });
-      return;
-    }
-    setDocument(file);
-  };
-
-  const removeDocument = () => {
-    setDocument(null);
-    if (fileInputRef.current) fileInputRef.current.value = '';
-  };
+  const SIGNUP_TOAST_ID = 'signup-status';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,13 +34,9 @@ export const Signup = React.forwardRef<HTMLDivElement>((_, ref) => {
       toast.error('Password must be at least 6 characters', { id: SIGNUP_TOAST_ID });
       return;
     }
-    if (!document) {
-      toast.error('Please upload an ID proof document', { id: SIGNUP_TOAST_ID });
-      return;
-    }
 
     setIsSubmitting(true);
-    const success = await signup(name, email, phone, password, document);
+    const success = await signup(name, email, phone, password);
     setIsSubmitting(false);
 
     if (success) {
@@ -126,45 +99,6 @@ export const Signup = React.forwardRef<HTMLDivElement>((_, ref) => {
             placeholder="+1 234-567-8901"
             className="input-field"
             autoComplete="tel"
-          />
-        </div>
-
-        {/* ID Proof Upload */}
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-2">
-            ID Proof Document <span className="text-destructive">*</span>
-          </label>
-          <p className="text-xs text-muted-foreground mb-2">
-            Upload a government ID (Aadhar, PAN, Driving License, Passport). JPG, PNG, or PDF — max 5MB.
-          </p>
-          {document ? (
-            <div className="flex items-center gap-3 p-3 rounded-lg border border-border bg-muted/50">
-              <FileText className="h-5 w-5 text-primary shrink-0" />
-              <span className="text-sm text-foreground truncate flex-1">{document.name}</span>
-              <button
-                type="button"
-                onClick={removeDocument}
-                className="p-1 hover:bg-destructive/10 rounded transition-colors"
-              >
-                <X className="h-4 w-4 text-destructive" />
-              </button>
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="w-full flex items-center justify-center gap-2 p-4 rounded-lg border-2 border-dashed border-border hover:border-primary/50 hover:bg-muted/30 transition-colors text-muted-foreground hover:text-foreground"
-            >
-              <Upload className="h-5 w-5" />
-              <span className="text-sm">Click to upload document</span>
-            </button>
-          )}
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".jpg,.jpeg,.png,.webp,.pdf"
-            onChange={handleFileChange}
-            className="hidden"
           />
         </div>
 
