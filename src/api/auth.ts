@@ -25,8 +25,5 @@ export interface AuthResponse {
 
 export const authApi = {
   login: (data: LoginRequest): Promise<AuthResponse> => apiClient.post('/auth/login', data),
-  signup: (data: FormData): Promise<AuthResponse> =>
-    apiClient.post('/auth/signup', data, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    }),
+  signup: (data: SignupRequest): Promise<AuthResponse> => apiClient.post('/auth/signup', data),
 };
