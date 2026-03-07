@@ -37,11 +37,19 @@ export const useDeleteCustomer = () => {
 export const useVehicles = () =>
   useQuery({ queryKey: ['vehicles'], queryFn: vehiclesApi.getAll });
 
+export const useMyVehicles = () =>
+  useQuery({ queryKey: ['vehicles', 'my'], queryFn: vehiclesApi.getMyVehicles });
+
+export const usePendingVehicles = () =>
+  useQuery({ queryKey: ['vehicles', 'pending'], queryFn: vehiclesApi.getPending });
+
 export const useCreateVehicle = () => {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (data: CreateVehicleDto) => vehiclesApi.create(data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['vehicles'] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['vehicles'] });
+    },
   });
 };
 
@@ -49,6 +57,22 @@ export const useUpdateVehicle = () => {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: Partial<Vehicle> }) => vehiclesApi.update(id, data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['vehicles'] }),
+  });
+};
+
+export const useApproveVehicle = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => vehiclesApi.approve(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['vehicles'] }),
+  });
+};
+
+export const useRejectVehicle = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => vehiclesApi.reject(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['vehicles'] }),
   });
 };
