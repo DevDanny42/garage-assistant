@@ -18,7 +18,7 @@ import { Inventory } from "@/pages/inventory/Inventory";
 import { Billing } from "@/pages/billing/Billing";
 import { Reports } from "@/pages/reports/Reports";
 import { Settings } from "@/pages/settings/Settings";
-import { UserApprovals } from "@/pages/admin/UserApprovals";
+
 import { UserDashboard } from "@/pages/user/UserDashboard";
 import { TrackService } from "@/pages/user/TrackService";
 import { MyVehicles } from "@/pages/user/MyVehicles";
