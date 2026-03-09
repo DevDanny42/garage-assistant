@@ -26,7 +26,7 @@ const navigation: { name: string; href: string; icon: any; roles: UserRole[] }[]
   { name: 'Inventory', href: '/inventory', icon: Package, roles: ['admin'] },
   { name: 'Billing', href: '/billing', icon: Receipt, roles: ['admin'] },
   { name: 'Reports', href: '/reports', icon: BarChart3, roles: ['admin'] },
-  { name: 'User Approvals', href: '/user-approvals', icon: UserCheck, roles: ['admin'] },
+  
   { name: 'Settings', href: '/settings', icon: Settings, roles: ['admin'] },
   // User pages
   { name: 'My Dashboard', href: '/my-dashboard', icon: LayoutDashboard, roles: ['user'] },
