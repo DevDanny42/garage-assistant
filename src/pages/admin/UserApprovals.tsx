@@ -17,10 +17,13 @@ export const UserApprovals: React.FC = () => {
   const queryClient = useQueryClient();
   const [confirmAction, setConfirmAction] = React.useState<{ id: string; action: 'approve' | 'reject' } | null>(null);
 
-  const { data: users = [], isLoading } = useQuery({
+  const { data: usersRaw = [], isLoading, isError } = useQuery({
     queryKey: ['pending-users'],
     queryFn: usersApi.getPending,
+    retry: 1,
   });
+
+  const users = Array.isArray(usersRaw) ? usersRaw : [];
 
   const approveMutation = useMutation({
     mutationFn: (id: string) => usersApi.approve(id),
