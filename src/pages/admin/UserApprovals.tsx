@@ -73,11 +73,11 @@ export const UserApprovals: React.FC = () => {
             </div>
           ))}
         </div>
-      ) : users.length === 0 ? (
+      ) : isError || users.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
           <UserCheck className="h-12 w-12 mb-3 opacity-40" />
-          <p className="text-lg font-medium">No pending approvals</p>
-          <p className="text-sm">All user registrations have been reviewed</p>
+          <p className="text-lg font-medium">{isError ? 'Unable to load approvals' : 'No pending approvals'}</p>
+          <p className="text-sm">{isError ? 'Please ensure the backend API is running and configured' : 'All user registrations have been reviewed'}</p>
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
