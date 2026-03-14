@@ -10,7 +10,7 @@ export const Login = React.forwardRef<HTMLDivElement>((_, ref) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<'admin' | 'user'>('user');
+  
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -26,12 +26,12 @@ export const Login = React.forwardRef<HTMLDivElement>((_, ref) => {
     }
 
     setIsSubmitting(true);
-    const success = await login(email, password, selectedRole);
+    const success = await login(email, password);
     setIsSubmitting(false);
 
     if (success) {
       toast.success('Welcome back!', { id: LOGIN_TOAST_ID });
-      navigate(selectedRole === 'admin' ? '/dashboard' : '/my-dashboard');
+      navigate('/dashboard');
     } else {
       toast.error('Login failed. Check backend /auth/login and API URL.', { id: LOGIN_TOAST_ID });
     }
@@ -83,29 +83,6 @@ export const Login = React.forwardRef<HTMLDivElement>((_, ref) => {
             >
               {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
             </button>
-          </div>
-        </div>
-
-        {/* Role Selection */}
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-2">
-            Login As
-          </label>
-          <div className="grid grid-cols-3 gap-2">
-            {(['admin', 'user'] as const).map((role) => (
-              <button
-                key={role}
-                type="button"
-                onClick={() => setSelectedRole(role)}
-                className={`py-2 px-3 rounded-lg text-sm font-medium border transition-colors capitalize ${
-                  selectedRole === role
-                    ? 'bg-accent text-accent-foreground border-accent'
-                    : 'bg-muted text-muted-foreground border-border hover:border-accent/50'
-                }`}
-              >
-                {role}
-              </button>
-            ))}
           </div>
         </div>
 
