@@ -26,12 +26,12 @@ export const Login = React.forwardRef<HTMLDivElement>((_, ref) => {
     }
 
     setIsSubmitting(true);
-    const success = await login(email, password, selectedRole);
+    const success = await login(email, password);
     setIsSubmitting(false);
 
     if (success) {
       toast.success('Welcome back!', { id: LOGIN_TOAST_ID });
-      navigate(selectedRole === 'admin' ? '/dashboard' : '/my-dashboard');
+      navigate('/dashboard');
     } else {
       toast.error('Login failed. Check backend /auth/login and API URL.', { id: LOGIN_TOAST_ID });
     }
