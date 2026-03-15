@@ -102,7 +102,30 @@ export const Login = React.forwardRef<HTMLDivElement>((_, ref) => {
         </button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-muted-foreground">
+      {/* Demo Accounts */}
+      <div className="mt-6 space-y-2">
+        <p className="text-xs text-center text-muted-foreground font-medium uppercase tracking-wide">Demo Accounts</p>
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            type="button"
+            onClick={() => { setEmail('admin@garage.com'); setPassword('admin123'); }}
+            className="flex flex-col items-center gap-1 rounded-lg border border-border bg-muted/50 px-3 py-2.5 text-sm hover:bg-muted transition-colors"
+          >
+            <span className="font-semibold text-foreground">Admin</span>
+            <span className="text-xs text-muted-foreground">admin@garage.com</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => { setEmail('user@garage.com'); setPassword('user123'); }}
+            className="flex flex-col items-center gap-1 rounded-lg border border-border bg-muted/50 px-3 py-2.5 text-sm hover:bg-muted transition-colors"
+          >
+            <span className="font-semibold text-foreground">User</span>
+            <span className="text-xs text-muted-foreground">user@garage.com</span>
+          </button>
+        </div>
+      </div>
+
+      <p className="mt-4 text-center text-sm text-muted-foreground">
         Don't have an account?{' '}
         <Link to="/signup" className="text-accent hover:underline font-medium">
           Sign Up
