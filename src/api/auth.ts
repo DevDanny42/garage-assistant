@@ -1,5 +1,15 @@
 import { apiClient } from './config';
 
+export interface UserDTO {
+  id: number;
+  name: string;
+  password?: string;
+  email: string;
+  role: 'ADMIN' | 'USER';
+  phone: string;
+  vehicle_ids: number[];
+}
+
 export interface LoginRequest {
   email: string;
   password: string;
@@ -14,13 +24,7 @@ export interface SignupRequest {
 
 export interface AuthResponse {
   token: string;
-  user: {
-    id: string;
-    name: string;
-    email: string;
-    role: 'admin' | 'user';
-    avatar?: string;
-  };
+  user: UserDTO;
 }
 
 export const authApi = {

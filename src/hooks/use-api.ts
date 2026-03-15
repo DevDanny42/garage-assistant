@@ -1,9 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { customersApi, type Customer, type CreateCustomerDto } from '@/api/customers';
-import { vehiclesApi, type Vehicle, type CreateVehicleDto } from '@/api/vehicles';
-import { jobCardsApi, type JobCard, type CreateJobCardDto } from '@/api/jobcards';
-import { inventoryApi, type InventoryItem, type CreateInventoryItemDto } from '@/api/inventory';
-import { billingApi, type Invoice, type CreateInvoiceDto } from '@/api/billing';
+import { vehiclesApi, type VehicleDTO, type CreateVehicleDto } from '@/api/vehicles';
+import { jobCardsApi, type JobCardDTO, type CreateJobCardDto } from '@/api/jobcards';
+import { inventoryApi, type InventaryDTO, type CreateInventaryDto } from '@/api/inventory';
+import { billingApi, type InvoiceDTO, type CreateInvoiceDto } from '@/api/billing';
 
 // ─── Customers ───────────────────────────────────────
 export const useCustomers = () =>
@@ -20,7 +20,7 @@ export const useCreateCustomer = () => {
 export const useUpdateCustomer = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<Customer> }) => customersApi.update(id, data),
+    mutationFn: ({ id, data }: { id: number; data: Partial<Customer> }) => customersApi.update(id, data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['customers'] }),
   });
 };
@@ -28,7 +28,7 @@ export const useUpdateCustomer = () => {
 export const useDeleteCustomer = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => customersApi.delete(id),
+    mutationFn: (id: number) => customersApi.delete(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['customers'] }),
   });
 };
@@ -47,32 +47,14 @@ export const useCreateVehicle = () => {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (data: CreateVehicleDto) => vehiclesApi.create(data),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['vehicles'] });
-    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['vehicles'] }),
   });
 };
 
 export const useUpdateVehicle = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<Vehicle> }) => vehiclesApi.update(id, data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['vehicles'] }),
-  });
-};
-
-export const useApproveVehicle = () => {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (id: string) => vehiclesApi.approve(id),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['vehicles'] }),
-  });
-};
-
-export const useRejectVehicle = () => {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (id: string) => vehiclesApi.reject(id),
+    mutationFn: ({ id, data }: { id: number; data: Partial<VehicleDTO> }) => vehiclesApi.update(id, data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['vehicles'] }),
   });
 };
@@ -80,7 +62,7 @@ export const useRejectVehicle = () => {
 export const useDeleteVehicle = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => vehiclesApi.delete(id),
+    mutationFn: (id: number) => vehiclesApi.delete(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['vehicles'] }),
   });
 };
@@ -100,7 +82,7 @@ export const useCreateJobCard = () => {
 export const useUpdateJobCard = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<JobCard> }) => jobCardsApi.update(id, data),
+    mutationFn: ({ id, data }: { id: number; data: Partial<JobCardDTO> }) => jobCardsApi.update(id, data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['jobCards'] }),
   });
 };
@@ -108,7 +90,7 @@ export const useUpdateJobCard = () => {
 export const useDeleteJobCard = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => jobCardsApi.delete(id),
+    mutationFn: (id: number) => jobCardsApi.delete(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['jobCards'] }),
   });
 };
@@ -120,7 +102,7 @@ export const useInventory = () =>
 export const useCreateInventoryItem = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (data: CreateInventoryItemDto) => inventoryApi.create(data),
+    mutationFn: (data: CreateInventaryDto) => inventoryApi.create(data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['inventory'] }),
   });
 };
@@ -128,7 +110,7 @@ export const useCreateInventoryItem = () => {
 export const useUpdateInventoryItem = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<InventoryItem> }) => inventoryApi.update(id, data),
+    mutationFn: ({ id, data }: { id: number; data: Partial<InventaryDTO> }) => inventoryApi.update(id, data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['inventory'] }),
   });
 };
@@ -136,7 +118,7 @@ export const useUpdateInventoryItem = () => {
 export const useDeleteInventoryItem = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => inventoryApi.delete(id),
+    mutationFn: (id: number) => inventoryApi.delete(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['inventory'] }),
   });
 };
@@ -156,7 +138,7 @@ export const useCreateInvoice = () => {
 export const useUpdateInvoice = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<Invoice> }) => billingApi.update(id, data),
+    mutationFn: ({ id, data }: { id: number; data: Partial<InvoiceDTO> }) => billingApi.update(id, data),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['invoices'] }),
   });
 };
@@ -164,7 +146,7 @@ export const useUpdateInvoice = () => {
 export const useDeleteInvoice = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => billingApi.delete(id),
+    mutationFn: (id: number) => billingApi.delete(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['invoices'] }),
   });
 };

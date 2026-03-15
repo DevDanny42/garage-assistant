@@ -1,33 +1,33 @@
 import { apiClient } from './config';
 
-export interface Vehicle {
-  id: string;
-  make: string;
+export type VehicleStatus = 'PENDING' | 'IN_SERVICE' | 'COMPLETED' | 'DELIVERED' | 'CANCELLED';
+export type ServiceType = 'GENERAL_SERVICE' | 'REPAIR' | 'BODY_WORK' | 'ELECTRICAL' | 'AC_SERVICE' | 'WASHING';
+
+export interface VehicleDTO {
+  id: number;
+  vehicleNumber: string;
+  vehicleType: string;
+  serviceType: ServiceType;
+  brand: string;
   model: string;
-  year: number;
-  licensePlate: string;
-  vin: string;
-  color: string;
-  owner: string;
-  ownerEmail?: string;
-  ownerPhone?: string;
-  lastService: string;
-  totalServices: number;
-  status: 'pending' | 'approved' | 'rejected';
-  submittedBy?: string;
-  submittedAt?: string;
+  vehicleStatus: VehicleStatus;
+  problemDescription: string;
+  solutionDescription: string;
+  arrivalTime: string;
+  expectedTime: string;
+  deliveryTime: string;
+  ownerName: string;
+  userEmail: string;
 }
 
-export type CreateVehicleDto = Omit<Vehicle, 'id' | 'lastService' | 'totalServices' | 'status' | 'submittedAt'>;
+export type CreateVehicleDto = Omit<VehicleDTO, 'id'>;
 
 export const vehiclesApi = {
-  getAll: (): Promise<Vehicle[]> => apiClient.get('/vehicles'),
-  getById: (id: string): Promise<Vehicle> => apiClient.get(`/vehicles/${id}`),
-  getMyVehicles: (): Promise<Vehicle[]> => apiClient.get('/vehicles/my'),
-  getPending: (): Promise<Vehicle[]> => apiClient.get('/vehicles/pending'),
-  create: (data: CreateVehicleDto): Promise<Vehicle> => apiClient.post('/vehicles', data),
-  update: (id: string, data: Partial<Vehicle>): Promise<Vehicle> => apiClient.put(`/vehicles/${id}`, data),
-  approve: (id: string): Promise<Vehicle> => apiClient.put(`/vehicles/${id}/approve`),
-  reject: (id: string): Promise<Vehicle> => apiClient.put(`/vehicles/${id}/reject`),
-  delete: (id: string): Promise<void> => apiClient.delete(`/vehicles/${id}`),
+  getAll: (): Promise<VehicleDTO[]> => apiClient.get('/vehicles'),
+  getById: (id: number): Promise<VehicleDTO> => apiClient.get(`/vehicles/${id}`),
+  getMyVehicles: (): Promise<VehicleDTO[]> => apiClient.get('/vehicles/my'),
+  getPending: (): Promise<VehicleDTO[]> => apiClient.get('/vehicles/pending'),
+  create: (data: CreateVehicleDto): Promise<VehicleDTO> => apiClient.post('/vehicles', data),
+  update: (id: number, data: Partial<VehicleDTO>): Promise<VehicleDTO> => apiClient.put(`/vehicles/${id}`, data),
+  delete: (id: number): Promise<void> => apiClient.delete(`/vehicles/${id}`),
 };

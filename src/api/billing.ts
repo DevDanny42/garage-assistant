@@ -1,27 +1,25 @@
 import { apiClient } from './config';
 
-export type PaymentStatus = 'paid' | 'pending' | 'overdue' | 'cancelled';
+export type PaymentMode = 'CASH' | 'CARD' | 'UPI' | 'NET_BANKING';
+export type InvoiceStatus = 'PAID' | 'UNPAID' | 'PARTIALLY_PAID' | 'CANCELLED';
 
-export interface Invoice {
-  id: string;
-  invoiceNumber: string;
-  customer: string;
-  jobCard: string;
-  amount: number;
-  tax: number;
-  total: number;
-  status: PaymentStatus;
-  dueDate: string;
-  createdAt: string;
-  paidAt?: string;
+export interface InvoiceDTO {
+  id: number;
+  invoiceDate: string;
+  labourAmount: number;
+  sparePartAmount: number;
+  totalInvoice: number;
+  paymentMode: PaymentMode;
+  invoiceStatus: InvoiceStatus;
+  jobCard_id: number;
 }
 
-export type CreateInvoiceDto = Omit<Invoice, 'id' | 'invoiceNumber' | 'createdAt'>;
+export type CreateInvoiceDto = Omit<InvoiceDTO, 'id'>;
 
 export const billingApi = {
-  getAll: (): Promise<Invoice[]> => apiClient.get('/invoices'),
-  getById: (id: string): Promise<Invoice> => apiClient.get(`/invoices/${id}`),
-  create: (data: CreateInvoiceDto): Promise<Invoice> => apiClient.post('/invoices', data),
-  update: (id: string, data: Partial<Invoice>): Promise<Invoice> => apiClient.put(`/invoices/${id}`, data),
-  delete: (id: string): Promise<void> => apiClient.delete(`/invoices/${id}`),
+  getAll: (): Promise<InvoiceDTO[]> => apiClient.get('/invoices'),
+  getById: (id: number): Promise<InvoiceDTO> => apiClient.get(`/invoices/${id}`),
+  create: (data: CreateInvoiceDto): Promise<InvoiceDTO> => apiClient.post('/invoices', data),
+  update: (id: number, data: Partial<InvoiceDTO>): Promise<InvoiceDTO> => apiClient.put(`/invoices/${id}`, data),
+  delete: (id: number): Promise<void> => apiClient.delete(`/invoices/${id}`),
 };

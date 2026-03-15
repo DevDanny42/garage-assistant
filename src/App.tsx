@@ -44,21 +44,20 @@ const App = () => (
 
             {/* Admin Routes */}
             <Route element={<AdminLayout />}>
-              <Route path="/dashboard" element={<RoleGuard allowedRoles={['admin']}><Dashboard /></RoleGuard>} />
-              <Route path="/customers" element={<RoleGuard allowedRoles={['admin']}><Customers /></RoleGuard>} />
-              <Route path="/vehicles" element={<RoleGuard allowedRoles={['admin']}><Vehicles /></RoleGuard>} />
-              <Route path="/job-cards" element={<RoleGuard allowedRoles={['admin']}><JobCards /></RoleGuard>} />
-              <Route path="/inventory" element={<RoleGuard allowedRoles={['admin']}><Inventory /></RoleGuard>} />
-              <Route path="/billing" element={<RoleGuard allowedRoles={['admin']}><Billing /></RoleGuard>} />
-              <Route path="/reports" element={<RoleGuard allowedRoles={['admin']}><Reports /></RoleGuard>} />
-              <Route path="/settings" element={<RoleGuard allowedRoles={['admin']}><Settings /></RoleGuard>} />
-              
+              <Route path="/dashboard" element={<RoleGuard allowedRoles={['ADMIN']}><Dashboard /></RoleGuard>} />
+              <Route path="/customers" element={<RoleGuard allowedRoles={['ADMIN']}><Customers /></RoleGuard>} />
+              <Route path="/vehicles" element={<RoleGuard allowedRoles={['ADMIN']}><Vehicles /></RoleGuard>} />
+              <Route path="/job-cards" element={<RoleGuard allowedRoles={['ADMIN']}><JobCards /></RoleGuard>} />
+              <Route path="/inventory" element={<RoleGuard allowedRoles={['ADMIN']}><Inventory /></RoleGuard>} />
+              <Route path="/billing" element={<RoleGuard allowedRoles={['ADMIN']}><Billing /></RoleGuard>} />
+              <Route path="/reports" element={<RoleGuard allowedRoles={['ADMIN']}><Reports /></RoleGuard>} />
+              <Route path="/settings" element={<RoleGuard allowedRoles={['ADMIN']}><Settings /></RoleGuard>} />
 
               {/* User Routes */}
-              <Route path="/my-dashboard" element={<RoleGuard allowedRoles={['user']}><UserDashboard /></RoleGuard>} />
-              <Route path="/track-service" element={<RoleGuard allowedRoles={['user']}><TrackService /></RoleGuard>} />
-              <Route path="/my-vehicles" element={<RoleGuard allowedRoles={['user']}><MyVehicles /></RoleGuard>} />
-              <Route path="/my-invoices" element={<RoleGuard allowedRoles={['user']}><MyInvoices /></RoleGuard>} />
+              <Route path="/my-dashboard" element={<RoleGuard allowedRoles={['USER']}><UserDashboard /></RoleGuard>} />
+              <Route path="/track-service" element={<RoleGuard allowedRoles={['USER']}><TrackService /></RoleGuard>} />
+              <Route path="/my-vehicles" element={<RoleGuard allowedRoles={['USER']}><MyVehicles /></RoleGuard>} />
+              <Route path="/my-invoices" element={<RoleGuard allowedRoles={['USER']}><MyInvoices /></RoleGuard>} />
             </Route>
 
             {/* Redirects */}

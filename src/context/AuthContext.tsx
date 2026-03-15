@@ -3,18 +3,19 @@ import { authApi } from '@/api/auth';
 import { ApiError } from '@/api/config';
 
 interface User {
-  id: string;
+  id: number;
   name: string;
   email: string;
-  role: 'admin' | 'user';
-  avatar?: string;
+  role: 'ADMIN' | 'USER';
+  phone?: string;
+  vehicle_ids?: number[];
 }
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string, role?: 'admin' | 'user') => Promise<boolean>;
+  login: (email: string, password: string) => Promise<boolean>;
   signup: (name: string, email: string, phone: string, password: string) => Promise<boolean>;
   logout: () => void;
 }
@@ -59,13 +60,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(false);
   }, []);
 
-  const login = async (email: string, password: string, role: 'admin' | 'user' = 'user'): Promise<boolean> => {
+  const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
     try {
       const response = await authApi.login({ email, password });
       const userData: User = {
         ...response.user,
-        role: response.user?.role ?? role,
+        role: response.user?.role ?? 'USER',
       };
       setUser(userData);
       localStorage.setItem('garage_user', JSON.stringify({ ...userData, token: response.token }));
@@ -84,7 +85,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const response = await authApi.signup({ name, email, phone, password });
       const userData: User = {
         ...response.user,
-        role: response.user?.role ?? 'user',
+        role: response.user?.role ?? 'USER',
       };
       setUser(userData);
       localStorage.setItem('garage_user', JSON.stringify({ ...userData, token: response.token }));
