@@ -19,20 +19,20 @@ import { cn } from '@/lib/utils';
 type UserRole = 'ADMIN' | 'USER';
 
 const navigation: { name: string; href: string; icon: any; roles: UserRole[] }[] = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, roles: ['admin'] },
-  { name: 'Customers', href: '/customers', icon: Users, roles: ['admin'] },
-  { name: 'Vehicles', href: '/vehicles', icon: Car, roles: ['admin'] },
-  { name: 'Job Cards', href: '/job-cards', icon: ClipboardList, roles: ['admin'] },
-  { name: 'Inventory', href: '/inventory', icon: Package, roles: ['admin'] },
-  { name: 'Billing', href: '/billing', icon: Receipt, roles: ['admin'] },
-  { name: 'Reports', href: '/reports', icon: BarChart3, roles: ['admin'] },
+  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, roles: ['ADMIN'] },
+  { name: 'Customers', href: '/customers', icon: Users, roles: ['ADMIN'] },
+  { name: 'Vehicles', href: '/vehicles', icon: Car, roles: ['ADMIN'] },
+  { name: 'Job Cards', href: '/job-cards', icon: ClipboardList, roles: ['ADMIN'] },
+  { name: 'Inventory', href: '/inventory', icon: Package, roles: ['ADMIN'] },
+  { name: 'Billing', href: '/billing', icon: Receipt, roles: ['ADMIN'] },
+  { name: 'Reports', href: '/reports', icon: BarChart3, roles: ['ADMIN'] },
   
-  { name: 'Settings', href: '/settings', icon: Settings, roles: ['admin'] },
+  { name: 'Settings', href: '/settings', icon: Settings, roles: ['ADMIN'] },
   // User pages
-  { name: 'My Dashboard', href: '/my-dashboard', icon: LayoutDashboard, roles: ['user'] },
-  { name: 'Track Service', href: '/track-service', icon: ClipboardList, roles: ['user'] },
-  { name: 'My Vehicles', href: '/my-vehicles', icon: Car, roles: ['user'] },
-  { name: 'My Invoices', href: '/my-invoices', icon: Receipt, roles: ['user'] },
+  { name: 'My Dashboard', href: '/my-dashboard', icon: LayoutDashboard, roles: ['USER'] },
+  { name: 'Track Service', href: '/track-service', icon: ClipboardList, roles: ['USER'] },
+  { name: 'My Vehicles', href: '/my-vehicles', icon: Car, roles: ['USER'] },
+  { name: 'My Invoices', href: '/my-invoices', icon: Receipt, roles: ['USER'] },
 ];
 
 interface SidebarProps {
