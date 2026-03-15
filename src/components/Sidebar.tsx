@@ -16,7 +16,7 @@ import {
 import { useAuth } from '@/context/AuthContext';
 import { cn } from '@/lib/utils';
 
-type UserRole = 'admin' | 'user';
+type UserRole = 'ADMIN' | 'USER';
 
 const navigation: { name: string; href: string; icon: any; roles: UserRole[] }[] = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, roles: ['admin'] },

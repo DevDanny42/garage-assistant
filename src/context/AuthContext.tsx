@@ -85,7 +85,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const response = await authApi.signup({ name, email, phone, password });
       const userData: User = {
         ...response.user,
-        role: response.user?.role ?? 'user',
+        role: response.user?.role ?? 'USER',
       };
       setUser(userData);
       localStorage.setItem('garage_user', JSON.stringify({ ...userData, token: response.token }));
