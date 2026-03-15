@@ -3,11 +3,12 @@ import { authApi } from '@/api/auth';
 import { ApiError } from '@/api/config';
 
 interface User {
-  id: string;
+  id: number;
   name: string;
   email: string;
-  role: 'admin' | 'user';
-  avatar?: string;
+  role: 'ADMIN' | 'USER';
+  phone?: string;
+  vehicle_ids?: number[];
 }
 
 interface AuthContextType {
