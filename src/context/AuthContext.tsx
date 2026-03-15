@@ -63,6 +63,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
     try {
+      // Demo accounts for testing without backend
+      const demoAccounts: Record<string, User> = {
+        'admin@garage.com': { id: 1, name: 'Admin User', email: 'admin@garage.com', role: 'ADMIN', phone: '9999999999', vehicle_ids: [] },
+        'user@garage.com': { id: 2, name: 'Demo Customer', email: 'user@garage.com', role: 'USER', phone: '8888888888', vehicle_ids: [] },
+      };
+
+      const demoUser = demoAccounts[email];
+      if (demoUser && (password === 'admin123' || password === 'user123')) {
+        setUser(demoUser);
+        localStorage.setItem('garage_user', JSON.stringify({ ...demoUser, token: 'demo-token' }));
+        return true;
+      }
+
+      // Real backend login
       const response = await authApi.login({ email, password });
       const userData: User = {
         ...response.user,
