@@ -60,13 +60,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(false);
   }, []);
 
-  const login = async (email: string, password: string, role: 'admin' | 'user' = 'user'): Promise<boolean> => {
+  const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
     try {
       const response = await authApi.login({ email, password });
       const userData: User = {
         ...response.user,
-        role: response.user?.role ?? role,
+        role: response.user?.role ?? 'USER',
       };
       setUser(userData);
       localStorage.setItem('garage_user', JSON.stringify({ ...userData, token: response.token }));
