@@ -3,6 +3,8 @@ import { Plus, Search, Filter, MoreVertical, Clock, DollarSign } from 'lucide-re
 import { DataTable } from '@/components/DataTable';
 import { StatusBadge, StatusType } from '@/components/StatusBadge';
 import { AddJobCardDialog } from '@/components/AddJobCardDialog';
+import { JobCardDetailPanel } from '@/components/JobCardDetailPanel';
+import { ServiceStep } from '@/components/ServiceProgressTracker';
 import { toast } from '@/hooks/use-toast';
 import {
   DropdownMenu,
@@ -22,17 +24,27 @@ interface JobCard {
   assignedTo: string;
   createdAt: string;
   dueDate: string;
+  spareParts?: { id: string; name: string; price: number; qty: number }[];
+  serviceSteps?: ServiceStep[];
 }
 
+const defaultSteps = (): ServiceStep[] => [
+  { label: 'Vehicle Received', done: false },
+  { label: 'Inspection', done: false },
+  { label: 'Service In Progress', done: false },
+  { label: 'Quality Check', done: false },
+  { label: 'Ready for Pickup', done: false },
+];
+
 const mockJobCards: JobCard[] = [
-  { id: '1', jobNumber: 'JC-2024-001', customer: 'John Smith', vehicle: 'Toyota Camry 2022', services: ['Oil Change', 'Filter Replacement'], status: 'in-progress', estimatedCost: 150, assignedTo: 'Mike Tech', createdAt: '2024-03-18', dueDate: '2024-03-19' },
-  { id: '2', jobNumber: 'JC-2024-002', customer: 'Sarah Wilson', vehicle: 'Honda Civic 2021', services: ['Brake Repair', 'Pad Replacement'], status: 'pending', estimatedCost: 450, assignedTo: 'John Tech', createdAt: '2024-03-18', dueDate: '2024-03-20' },
-  { id: '3', jobNumber: 'JC-2024-003', customer: 'Mike Johnson', vehicle: 'Ford F-150 2020', services: ['Engine Tune-up'], status: 'completed', estimatedCost: 280, assignedTo: 'Mike Tech', createdAt: '2024-03-17', dueDate: '2024-03-18' },
-  { id: '4', jobNumber: 'JC-2024-004', customer: 'Emily Davis', vehicle: 'BMW X5 2023', services: ['AC Repair', 'Gas Refill'], status: 'in-progress', estimatedCost: 350, assignedTo: 'Sarah Tech', createdAt: '2024-03-18', dueDate: '2024-03-19' },
-  { id: '5', jobNumber: 'JC-2024-005', customer: 'Robert Brown', vehicle: 'Audi A4 2021', services: ['Tire Rotation', 'Wheel Alignment'], status: 'completed', estimatedCost: 120, assignedTo: 'John Tech', createdAt: '2024-03-16', dueDate: '2024-03-17' },
-  { id: '6', jobNumber: 'JC-2024-006', customer: 'Lisa Anderson', vehicle: 'Mercedes C-Class 2022', services: ['Full Service'], status: 'pending', estimatedCost: 550, assignedTo: 'Mike Tech', createdAt: '2024-03-18', dueDate: '2024-03-21' },
-  { id: '7', jobNumber: 'JC-2024-007', customer: 'David Martinez', vehicle: 'Chevrolet Silverado 2020', services: ['Transmission Check'], status: 'cancelled', estimatedCost: 200, assignedTo: 'Sarah Tech', createdAt: '2024-03-15', dueDate: '2024-03-16' },
-  { id: '8', jobNumber: 'JC-2024-008', customer: 'Jennifer Taylor', vehicle: 'Tesla Model 3 2023', services: ['Battery Check', 'Software Update'], status: 'completed', estimatedCost: 100, assignedTo: 'John Tech', createdAt: '2024-03-17', dueDate: '2024-03-18' },
+  { id: '1', jobNumber: 'JC-2024-001', customer: 'John Smith', vehicle: 'Toyota Camry 2022', services: ['Oil Change', 'Filter Replacement'], status: 'in-progress', estimatedCost: 150, assignedTo: 'Mike Tech', createdAt: '2024-03-18', dueDate: '2024-03-19', serviceSteps: [{ label: 'Vehicle Received', done: true }, { label: 'Inspection', done: true }, { label: 'Service In Progress', done: false, active: true }, { label: 'Quality Check', done: false }, { label: 'Ready for Pickup', done: false }] },
+  { id: '2', jobNumber: 'JC-2024-002', customer: 'Sarah Wilson', vehicle: 'Honda Civic 2021', services: ['Brake Repair', 'Pad Replacement'], status: 'pending', estimatedCost: 450, assignedTo: 'John Tech', createdAt: '2024-03-18', dueDate: '2024-03-20', serviceSteps: defaultSteps() },
+  { id: '3', jobNumber: 'JC-2024-003', customer: 'Mike Johnson', vehicle: 'Ford F-150 2020', services: ['Engine Tune-up'], status: 'completed', estimatedCost: 280, assignedTo: 'Mike Tech', createdAt: '2024-03-17', dueDate: '2024-03-18', serviceSteps: defaultSteps().map(s => ({ ...s, done: true, active: false })) },
+  { id: '4', jobNumber: 'JC-2024-004', customer: 'Emily Davis', vehicle: 'BMW X5 2023', services: ['AC Repair', 'Gas Refill'], status: 'in-progress', estimatedCost: 350, assignedTo: 'Sarah Tech', createdAt: '2024-03-18', dueDate: '2024-03-19', serviceSteps: [{ label: 'Vehicle Received', done: true }, { label: 'Inspection', done: false, active: true }, { label: 'Service In Progress', done: false }, { label: 'Quality Check', done: false }, { label: 'Ready for Pickup', done: false }] },
+  { id: '5', jobNumber: 'JC-2024-005', customer: 'Robert Brown', vehicle: 'Audi A4 2021', services: ['Tire Rotation', 'Wheel Alignment'], status: 'completed', estimatedCost: 120, assignedTo: 'John Tech', createdAt: '2024-03-16', dueDate: '2024-03-17', serviceSteps: defaultSteps().map(s => ({ ...s, done: true, active: false })) },
+  { id: '6', jobNumber: 'JC-2024-006', customer: 'Lisa Anderson', vehicle: 'Mercedes C-Class 2022', services: ['Full Service'], status: 'pending', estimatedCost: 550, assignedTo: 'Mike Tech', createdAt: '2024-03-18', dueDate: '2024-03-21', serviceSteps: defaultSteps() },
+  { id: '7', jobNumber: 'JC-2024-007', customer: 'David Martinez', vehicle: 'Chevrolet Silverado 2020', services: ['Transmission Check'], status: 'cancelled', estimatedCost: 200, assignedTo: 'Sarah Tech', createdAt: '2024-03-15', dueDate: '2024-03-16', serviceSteps: defaultSteps() },
+  { id: '8', jobNumber: 'JC-2024-008', customer: 'Jennifer Taylor', vehicle: 'Tesla Model 3 2023', services: ['Battery Check', 'Software Update'], status: 'completed', estimatedCost: 100, assignedTo: 'John Tech', createdAt: '2024-03-17', dueDate: '2024-03-18', serviceSteps: defaultSteps().map(s => ({ ...s, done: true, active: false })) },
 ];
 
 export const JobCards: React.FC = () => {
@@ -40,6 +52,7 @@ export const JobCards: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<StatusType | 'all'>('all');
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [jobCards, setJobCards] = useState(mockJobCards);
+  const [selectedJob, setSelectedJob] = useState<JobCard | null>(null);
 
   const handleAddJobCard = (jc: { customer: string; vehicle: string; services: string[]; status: string; estimatedCost: number; assignedTo: string; dueDate: string }) => {
     const newJob: JobCard = {
@@ -53,9 +66,42 @@ export const JobCards: React.FC = () => {
       assignedTo: jc.assignedTo,
       createdAt: new Date().toISOString().split('T')[0],
       dueDate: jc.dueDate,
+      serviceSteps: defaultSteps(),
+      spareParts: [],
     };
     setJobCards([newJob, ...jobCards]);
     toast({ title: 'Job Card created', description: `${newJob.jobNumber} has been created.` });
+  };
+
+  const handleUpdateSteps = (jobId: string, steps: ServiceStep[]) => {
+    setJobCards((prev) =>
+      prev.map((j) => (j.id === jobId ? { ...j, serviceSteps: steps } : j))
+    );
+    if (selectedJob?.id === jobId) {
+      setSelectedJob((prev) => prev ? { ...prev, serviceSteps: steps } : prev);
+    }
+  };
+
+  const handleUpdateParts = (jobId: string, parts: { id: string; name: string; price: number; qty: number }[]) => {
+    setJobCards((prev) =>
+      prev.map((j) => (j.id === jobId ? { ...j, spareParts: parts } : j))
+    );
+    if (selectedJob?.id === jobId) {
+      setSelectedJob((prev) => prev ? { ...prev, spareParts: parts } : prev);
+    }
+  };
+
+  const handleStatusChange = (jobId: string, status: StatusType) => {
+    setJobCards((prev) =>
+      prev.map((j) => (j.id === jobId ? { ...j, status } : j))
+    );
+    if (selectedJob?.id === jobId) {
+      setSelectedJob((prev) => prev ? { ...prev, status } : prev);
+    }
+  };
+
+  const handleRowClick = (job: JobCard) => {
+    setSelectedJob(job);
   };
 
   const filteredJobCards = jobCards.filter((job) => {
@@ -134,15 +180,17 @@ export const JobCards: React.FC = () => {
     {
       key: 'actions',
       header: '',
-      render: () => (
+      render: (job: JobCard) => (
         <DropdownMenu>
-          <DropdownMenuTrigger className="p-2 hover:bg-muted rounded-lg transition-colors">
+          <DropdownMenuTrigger
+            className="p-2 hover:bg-muted rounded-lg transition-colors"
+            onClick={(e) => e.stopPropagation()}
+          >
             <MoreVertical className="h-4 w-4 text-muted-foreground" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem>View Details</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setSelectedJob(job)}>View Details</DropdownMenuItem>
             <DropdownMenuItem>Edit Job Card</DropdownMenuItem>
-            <DropdownMenuItem>Update Status</DropdownMenuItem>
             <DropdownMenuItem>Generate Invoice</DropdownMenuItem>
             <DropdownMenuItem className="text-destructive">Cancel Job</DropdownMenuItem>
           </DropdownMenuContent>
@@ -153,7 +201,6 @@ export const JobCards: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
       <div className="page-header">
         <div>
           <h1 className="page-title">Job Cards</h1>
@@ -165,7 +212,6 @@ export const JobCards: React.FC = () => {
         </button>
       </div>
 
-      {/* Status Tabs */}
       <div className="flex flex-wrap gap-2">
         {(['all', 'pending', 'in-progress', 'completed', 'cancelled'] as const).map((status) => (
           <button
@@ -183,7 +229,6 @@ export const JobCards: React.FC = () => {
         ))}
       </div>
 
-      {/* Search */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -201,14 +246,25 @@ export const JobCards: React.FC = () => {
         </button>
       </div>
 
-      {/* Data Table */}
       <DataTable
         columns={columns}
         data={filteredJobCards}
         emptyMessage="No job cards found"
+        onRowClick={handleRowClick}
       />
 
       <AddJobCardDialog open={showAddDialog} onOpenChange={setShowAddDialog} onAdd={handleAddJobCard} />
+
+      {selectedJob && (
+        <JobCardDetailPanel
+          job={selectedJob}
+          open={!!selectedJob}
+          onClose={() => setSelectedJob(null)}
+          onUpdateSteps={handleUpdateSteps}
+          onUpdateParts={handleUpdateParts}
+          onStatusChange={handleStatusChange}
+        />
+      )}
     </div>
   );
 };
